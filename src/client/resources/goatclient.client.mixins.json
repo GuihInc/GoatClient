@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "package": "dev.goatclient.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": ["LocalPlayerSkinMixin", "MinecraftSessionMixin", "RealmsClientAccessor", "RealmsAvailabilityAccessor", "RealmsAvailabilityMixin", "PackDownloadSessionMixin"],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

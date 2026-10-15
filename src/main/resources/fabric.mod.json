@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "goatclient",
+  "version": "${version}",
+  "name": "GoatClient",
+  "icon": "assets/goatclient/textures/gui/logo.png",
+  "description": "Client para Minecraft 26.3: capas, HUD e contas Microsoft/launcher/offline.",
+  "authors": ["GoatClient"],
+  "environment": "client",
+  "entrypoints": {
+    "client": ["dev.goatclient.GoatClient"]
+  },
+  "mixins": ["goatclient.client.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "26.3",
+    "java": ">=25",
+    "fabric-api": ">=0.163.0"
+  }
+}

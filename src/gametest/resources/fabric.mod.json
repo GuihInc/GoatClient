@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "goatclient_gametest",
+  "version": "1.0.0",
+  "name": "GoatClient integration tests",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-client-gametest": ["dev.goatclient.GoatClientGameTest"]
+  },
+  "depends": {
+    "goatclient": "*",
+    "fabric-client-gametest-api-v1": "*"
+  }
+}

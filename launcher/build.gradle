@@ -1,0 +1,130 @@
+import groovy.json.JsonOutput
+import java.security.MessageDigest
+
+plugins {
+    id 'application'
+}
+
+version = '0.1.0'
+group = 'dev.goatclient'
+
+repositories { mavenCentral() }
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.14.0'
+    implementation 'org.apache.commons:commons-compress:1.28.0'
+    testImplementation platform('org.junit:junit-bom:5.13.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+java { toolchain.languageVersion = JavaLanguageVersion.of(25) }
+application { mainClass = 'dev.goatclient.launcher.LauncherMain' }
+
+sourceSets.main.java {
+    srcDir '../src/main/java'
+    include 'dev/goatclient/auth/**'
+    include 'dev/goatclient/launcher/**'
+}
+
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+test { useJUnitPlatform() }
+
+def clientJar = rootProject.tasks.named('jar', Jar)
+def bundledJar = clientJar.flatMap { it.archiveFile }
+def releaseResources = layout.buildDirectory.dir('generated/releases')
+tasks.register('bundleRelease') {
+    dependsOn clientJar
+    inputs.file(bundledJar)
+    inputs.property 'minecraft', rootProject.minecraft_version
+    inputs.property 'loader', rootProject.loader_version
+    inputs.property 'fabricApi', rootProject.fabric_api_version
+    inputs.property 'clientVersion', rootProject.mod_version
+    outputs.dir(releaseResources)
+    def mc = rootProject.minecraft_version.toString()
+    def loader = rootProject.loader_version.toString()
+    def api = rootProject.fabric_api_version.toString()
+    def clientVersion = rootProject.mod_version.toString()
+    doLast {
+        File output = releaseResources.get().asFile
+        output.mkdirs()
+        File artifact = bundledJar.get().asFile
+        File releases = new File(output, 'releases')
+        releases.mkdirs()
+        java.nio.file.Files.copy(artifact.toPath(), new File(releases, artifact.name).toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        def sha = MessageDigest.getInstance('SHA-256').digest(artifact.bytes).encodeHex().toString()
+        new File(output, 'catalog.json').text = JsonOutput.prettyPrint(JsonOutput.toJson([
+            schemaVersion: 1,
+            releases: [[id: "goatclient-${clientVersion}-mc${mc}", name: "GoatClient ${clientVersion}",
+                minecraft: mc, loader: loader, fabricApi: api,
+                client: [url: "resource:/releases/${artifact.name}", sha256: sha]]]
+        ]))
+    }
+}
+
+processResources {
+    dependsOn tasks.named('bundleRelease')
+    from releaseResources
+    from('../src/main/resources/assets/goatclient/textures/gui/logo.png') { into 'brand' }
+}
+
+tasks.register('exportCatalog', Sync) {
+    dependsOn tasks.named('bundleRelease')
+    from(releaseResources)
+    into layout.buildDirectory.dir('release')
+    filesMatching('catalog.json') {
+        filter { line -> line.replace('resource:/releases/', 'releases/') }
+    }
+}
+
+tasks.register('fatJar', Jar) {
+    dependsOn classes
+    archiveFileName = 'goatclient-launcher.jar'
+    destinationDirectory = layout.buildDirectory.dir('jpackage-input')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest { attributes 'Main-Class': application.mainClass.get() }
+    from sourceSets.main.output
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'module-info.class', 'META-INF/versions/**/module-info.class'
+}
+
+def platformName = System.getProperty('os.name').toLowerCase().contains('win') ? 'windows' :
+        System.getProperty('os.name').toLowerCase().contains('mac') ? 'macos' : 'linux'
+def platformArch = System.getProperty('os.arch').toLowerCase().contains('aarch64') ? 'arm64' : 'x64'
+def imageDir = layout.buildDirectory.dir('native')
+def executableName = platformName == 'windows' ? 'jpackage.exe' : 'jpackage'
+def packagingJava = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(25) }
+def inputDir = layout.buildDirectory.dir('jpackage-input')
+def launcherVersion = project.version.toString()
+def launcherMainClass = application.mainClass.get()
+def brandIcon = file('../src/main/resources/assets/goatclient/textures/gui/logo.png').absolutePath
+
+tasks.register('cleanNativeImage', Delete) {
+    delete imageDir.map { it.dir('GoatClientLauncher') }
+    delete imageDir.map { it.dir('GoatClientLauncher.app') }
+}
+
+tasks.register('nativeImage', Exec) {
+    dependsOn tasks.named('fatJar'), tasks.named('cleanNativeImage')
+    inputs.file(tasks.named('fatJar').flatMap { it.archiveFile })
+    outputs.dir(imageDir)
+    def command = [packagingJava.get().metadata.installationPath.file("bin/${executableName}").asFile.absolutePath,
+            '--type', 'app-image', '--name', 'GoatClientLauncher',
+            '--input', inputDir.get().asFile.absolutePath,
+            '--main-jar', 'goatclient-launcher.jar', '--main-class', launcherMainClass,
+            '--dest', imageDir.get().asFile.absolutePath, '--app-version', launcherVersion,
+            '--vendor', 'GoatClient', '--description', 'GoatClient Launcher',
+            '--add-modules', 'java.se,jdk.unsupported,jdk.crypto.ec,jdk.charsets,jdk.zipfs,jdk.net']
+    if (platformName == 'linux') command += ['--icon', brandIcon]
+    commandLine command
+}
+
+tasks.register('packageLauncher', Zip) {
+    dependsOn tasks.named('nativeImage')
+    archiveFileName = "GoatClientLauncher-${project.version}-${platformName}-${platformArch}.zip"
+    destinationDirectory = layout.buildDirectory.dir('distributions')
+    from(imageDir) { include 'GoatClientLauncher/**', 'GoatClientLauncher.app/**' }
+    from('README.md') { rename { 'LEIA-ME.md' } }
+    // Native launchers need their executable flags preserved on Unix.
+    filePermissions { unix('755') }
+}
