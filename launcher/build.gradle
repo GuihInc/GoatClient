@@ -106,7 +106,7 @@ tasks.register('generateNativeIcons') {
     inputs.file(brandIcon)
     outputs.files(windowsIcon, macIcon)
     doLast {
-        def source = javax.imageio.ImageIO.read(file(brandIcon))
+        def source = javax.imageio.ImageIO.read(new File(brandIcon))
         if (source == null) throw new GradleException("Não foi possível ler o ícone: ${brandIcon}")
         def png = { int size ->
             def image = new java.awt.image.BufferedImage(size, size, java.awt.image.BufferedImage.TYPE_INT_ARGB)
