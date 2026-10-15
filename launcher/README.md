@@ -71,7 +71,7 @@ O ZIP aparece em `launcher/build/distributions/GoatClientLauncher-1.0.0-<sistema
 
 O workflow `.github/workflows/launcher.yml` está preparado para Linux x64, Windows x64, macOS ARM64 e macOS Intel. Depois de colocar este projeto em um repositório GitHub, execute **Build GoatClient Launcher** em Actions ou envie uma tag `launcher-v*`. Os ZIPs ficam nos artefatos da execução; não são publicados automaticamente em Releases. Os ambientes vêm das [imagens oficiais do GitHub Actions](https://github.com/actions/runner-images).
 
-**Validado neste ambiente:** 8 testes unitários do launcher, instalação completa de Minecraft 26.3 com Fabric/client, download e extração do JRE 25 e início real do jogo em Linux x64. O pacote Linux foi gerado localmente. Windows e macOS ainda precisam executar seu workflow nativo e ser validados nesses sistemas. O login Microsoft real depende do Application ID ausente.
+**Validado:** os 26 testes automatizados passaram nos quatro runners. O smoke test abriu o launcher nativo no Linux x64, Windows x64, macOS ARM64 e macOS Intel. Também testei no Linux a instalação completa de Minecraft 26.3 com Fabric/GoatClient, o download e a extração do JRE 25 e o início do jogo. Os quatro ZIPs 1.0.0 foram gerados pela execução [Build GoatClient Launcher no GitHub Actions](https://github.com/GuihInc/GoatClient/actions/runs/38770091762). Entre na conta com acesso ao repositório privado, abra **Artifacts** e baixe o pacote da plataforma desejada. O login Microsoft real continua dependendo do Application ID do projeto.
 
 Para executar o launcher a partir do código:
 
