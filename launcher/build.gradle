@@ -120,11 +120,15 @@ tasks.register('generateNativeIcons') {
             javax.imageio.ImageIO.write(image, 'png', bytes)
             bytes.toByteArray()
         }
-        def writeLE = { java.io.OutputStream output, long value, int count ->
-            for (int index = 0; index < count; index++) output.write((int) ((value >> (8 * index)) & 0xff))
+        def writeLE = { output, value, count ->
+            long number = value as long
+            int width = count as int
+            for (int index = 0; index < width; index++) output.write((int) ((number >>> (8 * index)) & 0xffL))
         }
-        def writeBE = { java.io.OutputStream output, long value, int count ->
-            for (int index = count - 1; index >= 0; index--) output.write((int) ((value >> (8 * index)) & 0xff))
+        def writeBE = { output, value, count ->
+            long number = value as long
+            int width = count as int
+            for (int index = width - 1; index >= 0; index--) output.write((int) ((number >>> (8 * index)) & 0xffL))
         }
 
         def icoSizes = [16, 24, 32, 48, 64, 128, 256]
