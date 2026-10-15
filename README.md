@@ -8,7 +8,7 @@ O foco dos dois modos é personalização, informações na tela e conveniência
 
 O módulo `launcher/` instala o jogo e suas dependências, permite escolher versões e aceita novos releases por catálogo local ou HTTPS, sem recompilar o executável. Usa sua logo, oferece perfil offline e ajuste de memória/Java.
 
-O pacote Linux x64 da versão **1.0.1** ficará em `launcher/build/distributions/GoatClientLauncher-1.0.1-linux-x64.zip`. Extraia tudo e abra `GoatClientLauncher/bin/GoatClientLauncher`. O workflow também gera os ZIPs para Windows x64, macOS Intel e macOS Apple Silicon. Baixe-os na seção **Artifacts** da [execução no GitHub Actions](https://github.com/GuihInc/GoatClient/actions/workflows/launcher.yml); o repositório é privado e exige acesso à conta GuihInc.
+Os pacotes Linux x64, Windows x64, macOS Intel e macOS Apple Silicon da versão **1.0.1** ficarão em [Releases](https://github.com/GuihInc/GoatClient/releases); o repositório é privado e exige acesso à conta GuihInc.
 
 O launcher usa somente perfis offline, para mundos locais e servidores que aceitam esse tipo de sessão. [Instruções do launcher e publicação de novas versões](launcher/README.md).
 

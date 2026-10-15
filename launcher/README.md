@@ -63,9 +63,9 @@ No Windows: `gradlew.bat test :launcher:test :launcher:packageLauncher`.
 
 O ZIP aparece em `launcher/build/distributions/GoatClientLauncher-1.0.1-<sistema>-<arquitetura>.zip`. O aplicativo usa `jpackage` e inclui seu próprio runtime. O empacotamento nativo deve rodar em cada sistema de destino, conforme a [documentação do JDK](https://docs.oracle.com/en/java/javase/25/jpackage/packaging-overview.html).
 
-O workflow `.github/workflows/launcher.yml` gera pacotes para Linux x64, Windows x64, macOS ARM64 e macOS Intel. No repositório, execute **Build GoatClient Launcher** em Actions ou envie uma tag `launcher-v*`. Os ZIPs ficam nos artefatos da execução; não são publicados automaticamente em Releases. Os ambientes vêm das [imagens oficiais do GitHub Actions](https://github.com/actions/runner-images).
+O workflow `.github/workflows/launcher.yml` gera pacotes para Linux x64, Windows x64, macOS ARM64 e macOS Intel. No repositório, execute **Build GoatClient Launcher** em Actions para gerar artefatos temporários, ou envie uma tag `launcher-v*` para criar um GitHub Release com os quatro ZIPs anexados. Os ambientes vêm das [imagens oficiais do GitHub Actions](https://github.com/actions/runner-images).
 
-Os pacotes da versão 1.0.1 estarão nos artefatos da [execução do workflow](https://github.com/GuihInc/GoatClient/actions/workflows/launcher.yml). Entre na conta com acesso ao repositório privado, abra a execução mais recente de **Build GoatClient Launcher** e baixe o artefato da sua plataforma.
+O release 1.0.1 e seus pacotes estarão em [Releases](https://github.com/GuihInc/GoatClient/releases). Entre na conta com acesso ao repositório privado para baixar o ZIP da sua plataforma.
 
 Para executar o launcher a partir do código:
 
