@@ -22,7 +22,10 @@ public final class LauncherMain {
                 System.out.println("GoatClient Launcher OK / " + Platform.current().os() + " / " + releases.getFirst());
                 return;
             }
-            Path root = Path.of(option(args, "--data-dir", Platform.current().dataDirectory().toString())).toAbsolutePath().normalize();
+            Platform platform = Platform.current();
+            Path root = Arrays.asList(args).contains("--data-dir")
+                    ? Path.of(option(args, "--data-dir", "")).toAbsolutePath().normalize()
+                    : new LauncherLocation(platform).load(platform.dataDirectory()).toAbsolutePath().normalize();
             Files.createDirectories(root);
             try { Files.setPosixFilePermissions(root, PosixFilePermissions.fromString("rwx------")); }
             catch (UnsupportedOperationException ignored) { }

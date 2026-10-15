@@ -31,7 +31,7 @@ jobs:
       - name: Package native launcher
         shell: bash
         run: |
-          if [ "${{ inputs.skip_tests }}" != "true" ] && [[ "$GITHUB_REF" != refs/tags/launcher-v* ]]; then
+          if [ "${{ inputs.skip_tests }}" != "true" ]; then
             ./gradlew test :launcher:test --no-daemon
           fi
           ./gradlew :launcher:packageLauncher --no-daemon

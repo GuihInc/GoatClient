@@ -53,6 +53,7 @@ public final class LauncherFrame extends JFrame {
     private final JButton refresh = new JButton("Verificar versões");
     private final JButton importCatalog = new JButton("Importar catálogo...");
     private final JButton saveSettings = new JButton("Salvar configurações");
+    private final JLabel dataDirectoryLabel = new JLabel();
     private final JButton cancel = new JButton("Cancelar");
     private final JLabel status = new JLabel("Pronto para jogar.");
     private final JProgressBar progressBar = new JProgressBar();
@@ -203,7 +204,35 @@ public final class LauncherFrame extends JFrame {
             catch (Exception exception) { progress = "Pasta: " + root; }
         });
         panel.add(folder);
+        panel.add(Box.createVerticalStrut(16));
+        panel.add(new JLabel("Pasta atual dos dados e instalações:"));
+        dataDirectoryLabel.setText(root.toString());
+        dataDirectoryLabel.setToolTipText(root.toString());
+        panel.add(dataDirectoryLabel);
+        panel.add(Box.createVerticalStrut(8));
+        JButton changeFolder = new JButton("Alterar diretório...");
+        changeFolder.addActionListener(event -> changeDataDirectory());
+        panel.add(changeFolder);
         return panel;
+    }
+
+    private void changeDataDirectory() {
+        JFileChooser chooser = new JFileChooser(root.toFile());
+        chooser.setDialogTitle("Escolher diretório do GoatClient");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
+        Path selected = chooser.getSelectedFile().toPath().toAbsolutePath().normalize();
+        try {
+            if (!java.nio.file.Files.isDirectory(selected)) throw new IllegalArgumentException("Escolha uma pasta existente.");
+            new LauncherLocation(Platform.current()).save(selected);
+            dataDirectoryLabel.setText(selected.toString());
+            dataDirectoryLabel.setToolTipText(selected.toString());
+            JOptionPane.showMessageDialog(this,
+                    "O GoatClient usará esta pasta na próxima vez que for aberto.\n"
+                            + "Os dados da pasta atual não serão movidos nem apagados.",
+                    "Diretório atualizado", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception exception) { error(exception); }
     }
 
     private void launch() {

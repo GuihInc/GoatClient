@@ -1,6 +1,6 @@
 # GoatClient Launcher
 
-Launcher desktop independente para o GoatClient, com foco em **PvP e survival**: logo própria, seleção de versões, instalação de Minecraft/Fabric/Fabric API, download automático do Java necessário e perfil offline. Versão do launcher: **1.0.1**. Versão incluída do client: **0.2.1 para Minecraft 26.3**. O client atual oferece cosméticos e HUD; não inclui vantagens de combate ou perfis separados por modo de jogo.
+Launcher desktop independente para o GoatClient, com foco em **PvP e survival**: logo própria, seleção de versões, instalação de Minecraft/Fabric/Fabric API, download automático do Java necessário e perfil offline. Versão do launcher: **1.0.2**. Versão incluída do client: **0.2.1 para Minecraft 26.3**. O client atual oferece cosméticos e HUD; não inclui vantagens de combate ou perfis separados por modo de jogo.
 
 ## Abrir
 
@@ -12,7 +12,7 @@ Extraia **todo** o ZIP correspondente ao seu sistema e arquitetura. Mantenha as 
 
 O Java do launcher já acompanha o aplicativo. Na primeira instalação, ele baixa os arquivos oficiais do jogo, o Fabric, o Fabric API e, se necessário, um JRE Temurin da Adoptium. Não é necessário instalar Java manualmente para usar o pacote nativo. A conexão com a internet é necessária para a instalação inicial e novas versões. O sistema também precisa das bibliotecas gráficas e dos drivers exigidos pelo Minecraft.
 
-Em **Jogar**, escolha a versão, informe seu nick offline e clique em **Instalar e jogar**. Em **Configurações**, ajuste a memória ou selecione um executável Java próprio. O padrão é 2 GB para o jogo, independentemente da memória usada pelo launcher. O botão de cancelamento pede confirmação antes de encerrar um jogo aberto; salve seu mundo primeiro.
+Em **Jogar**, escolha a versão, informe seu nick offline e clique em **Instalar e jogar**. Em **Configurações**, ajuste a memória, selecione um executável Java próprio ou altere o diretório dos dados e instalações. A troca do diretório vale ao reabrir o launcher; ela não move nem apaga os dados antigos. O padrão é 2 GB para o jogo, independentemente da memória usada pelo launcher. O botão de cancelamento pede confirmação antes de encerrar um jogo aberto; salve seu mundo primeiro.
 
 Estes pacotes são aplicativos portáveis, não instaladores MSI/DMG/DEB. Ainda não há assinatura de distribuição Windows nem assinatura/notarização Apple; o sistema pode apresentar avisos. Para distribuição pública, configure a assinatura apropriada.
 
@@ -61,11 +61,11 @@ Com um **JDK 25** disponível, execute no sistema de destino:
 
 No Windows: `gradlew.bat test :launcher:test :launcher:packageLauncher`.
 
-O ZIP aparece em `launcher/build/distributions/GoatClientLauncher-1.0.1-<sistema>-<arquitetura>.zip`. O aplicativo usa `jpackage` e inclui seu próprio runtime. O empacotamento nativo deve rodar em cada sistema de destino, conforme a [documentação do JDK](https://docs.oracle.com/en/java/javase/25/jpackage/packaging-overview.html).
+O ZIP aparece em `launcher/build/distributions/GoatClientLauncher-1.0.2-<sistema>-<arquitetura>.zip`. O aplicativo usa `jpackage` e inclui seu próprio runtime. O build converte a logo do GoatClient para os formatos `.ico` e `.icns` no Windows e macOS; no Linux, usa o PNG original. O empacotamento nativo deve rodar em cada sistema de destino, conforme a [documentação do JDK](https://docs.oracle.com/en/java/javase/25/jpackage/packaging-overview.html).
 
 O workflow `.github/workflows/launcher.yml` gera pacotes para Linux x64, Windows x64, macOS ARM64 e macOS Intel. No repositório, execute **Build GoatClient Launcher** em Actions para gerar artefatos temporários, ou envie uma tag `launcher-v*` para criar um GitHub Release com os quatro ZIPs anexados. Os ambientes vêm das [imagens oficiais do GitHub Actions](https://github.com/actions/runner-images).
 
-O release 1.0.1 e seus pacotes estarão em [Releases](https://github.com/GuihInc/GoatClient/releases). Entre na conta com acesso ao repositório privado para baixar o ZIP da sua plataforma.
+O release 1.0.2 e seus pacotes estarão em [Releases](https://github.com/GuihInc/GoatClient/releases). Entre na conta com acesso ao repositório privado para baixar o ZIP da sua plataforma.
 
 Para executar o launcher a partir do código:
 

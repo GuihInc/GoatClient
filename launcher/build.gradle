@@ -5,7 +5,7 @@ plugins {
     id 'application'
 }
 
-version = '1.0.1'
+version = '1.0.2'
 group = 'dev.goatclient'
 
 repositories { mavenCentral() }
@@ -98,6 +98,78 @@ def inputDir = layout.buildDirectory.dir('jpackage-input')
 def launcherVersion = project.version.toString()
 def launcherMainClass = application.mainClass.get()
 def brandIcon = file('../src/main/resources/assets/goatclient/textures/gui/logo.png').absolutePath
+def generatedIcons = layout.buildDirectory.dir('generated/native-icons')
+def windowsIcon = generatedIcons.map { it.file('goatclient.ico') }
+def macIcon = generatedIcons.map { it.file('goatclient.icns') }
+
+tasks.register('generateNativeIcons') {
+    inputs.file(brandIcon)
+    outputs.files(windowsIcon, macIcon)
+    doLast {
+        def source = javax.imageio.ImageIO.read(file(brandIcon))
+        if (source == null) throw new GradleException("Não foi possível ler o ícone: ${brandIcon}")
+        def png = { int size ->
+            def image = new java.awt.image.BufferedImage(size, size, java.awt.image.BufferedImage.TYPE_INT_ARGB)
+            def graphics = image.createGraphics()
+            try {
+                graphics.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_BICUBIC)
+                graphics.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON)
+                graphics.drawImage(source, 0, 0, size, size, null)
+            } finally { graphics.dispose() }
+            def bytes = new java.io.ByteArrayOutputStream()
+            javax.imageio.ImageIO.write(image, 'png', bytes)
+            bytes.toByteArray()
+        }
+        def writeLE = { java.io.OutputStream output, long value, int count ->
+            for (int index = 0; index < count; index++) output.write((int) ((value >> (8 * index)) & 0xff))
+        }
+        def writeBE = { java.io.OutputStream output, long value, int count ->
+            for (int index = count - 1; index >= 0; index--) output.write((int) ((value >> (8 * index)) & 0xff))
+        }
+
+        def icoSizes = [16, 24, 32, 48, 64, 128, 256]
+        def icoImages = icoSizes.collect { size -> [size: size, bytes: png(size)] }
+        def ico = new java.io.ByteArrayOutputStream()
+        writeLE(ico, 0, 2) // reserved
+        writeLE(ico, 1, 2) // icon resource
+        writeLE(ico, icoImages.size(), 2)
+        long offset = 6 + 16 * icoImages.size()
+        icoImages.each { entry ->
+            int size = entry['size'] as int
+            writeLE(ico, size == 256 ? 0 : size, 1)
+            writeLE(ico, size == 256 ? 0 : size, 1)
+            writeLE(ico, 0, 1) // palette
+            writeLE(ico, 0, 1) // reserved
+            writeLE(ico, 1, 2) // color planes
+            writeLE(ico, 32, 2) // bits per pixel
+            writeLE(ico, entry['bytes'].length, 4)
+            writeLE(ico, offset, 4)
+            offset += entry['bytes'].length
+        }
+        icoImages.each { ico.write(it['bytes']) }
+        def icoFile = windowsIcon.get().asFile
+        icoFile.parentFile.mkdirs()
+        icoFile.bytes = ico.toByteArray()
+
+        def icnsEntries = [[16, 'icp4'], [32, 'icp5'], [64, 'icp6'], [128, 'ic07'],
+                           [256, 'ic08'], [512, 'ic09'], [1024, 'ic10']].collect { size, type ->
+            def bytes = png(size as int)
+            def chunk = new java.io.ByteArrayOutputStream()
+            chunk.write(type.getBytes(java.nio.charset.StandardCharsets.US_ASCII))
+            writeBE(chunk, bytes.length + 8, 4)
+            chunk.write(bytes)
+            [bytes: chunk.toByteArray()]
+        }
+        def icns = new java.io.ByteArrayOutputStream()
+        icns.write('icns'.getBytes(java.nio.charset.StandardCharsets.US_ASCII))
+        long icnsLength = 8 + icnsEntries.sum { it['bytes'].length }
+        writeBE(icns, icnsLength, 4)
+        icnsEntries.each { icns.write(it['bytes']) }
+        def icnsFile = macIcon.get().asFile
+        icnsFile.parentFile.mkdirs()
+        icnsFile.bytes = icns.toByteArray()
+    }
+}
 
 tasks.register('cleanNativeImage', Delete) {
     delete imageDir.map { it.dir('GoatClientLauncher') }
@@ -105,7 +177,7 @@ tasks.register('cleanNativeImage', Delete) {
 }
 
 tasks.register('nativeImage', Exec) {
-    dependsOn tasks.named('fatJar'), tasks.named('cleanNativeImage')
+    dependsOn tasks.named('fatJar'), tasks.named('cleanNativeImage'), tasks.named('generateNativeIcons')
     inputs.file(tasks.named('fatJar').flatMap { it.archiveFile })
     outputs.dir(imageDir)
     def command = [packagingJava.get().metadata.installationPath.file("bin/${executableName}").asFile.absolutePath,
@@ -115,7 +187,9 @@ tasks.register('nativeImage', Exec) {
             '--dest', imageDir.get().asFile.absolutePath, '--app-version', launcherVersion,
             '--vendor', 'GoatClient', '--description', 'GoatClient Launcher',
             '--add-modules', 'java.se,jdk.unsupported,jdk.crypto.ec,jdk.charsets,jdk.zipfs,jdk.net']
-    if (platformName == 'linux') command += ['--icon', brandIcon]
+    def platformIcon = platformName == 'windows' ? windowsIcon.get().asFile.absolutePath :
+            platformName == 'macos' ? macIcon.get().asFile.absolutePath : brandIcon
+    command += ['--icon', platformIcon]
     commandLine command
 }
 

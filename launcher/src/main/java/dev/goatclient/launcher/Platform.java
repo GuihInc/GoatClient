@@ -26,4 +26,15 @@ public record Platform(String os, String arch, String version) {
         String xdg = System.getenv("XDG_DATA_HOME");
         return Path.of(xdg == null || xdg.isBlank() ? user + "/.local/share" : xdg, "GoatClient");
     }
+
+    public Path configDirectory() {
+        String user = System.getProperty("user.home");
+        if (os.equals("windows")) {
+            String appData = System.getenv("APPDATA");
+            return Path.of(appData == null ? user + "/AppData/Roaming" : appData, "GoatClient");
+        }
+        if (os.equals("osx")) return Path.of(user, "Library", "Preferences", "GoatClient");
+        String xdg = System.getenv("XDG_CONFIG_HOME");
+        return Path.of(xdg == null || xdg.isBlank() ? user + "/.config" : xdg, "GoatClient");
+    }
 }
