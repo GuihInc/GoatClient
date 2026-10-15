@@ -1,6 +1,6 @@
 # GoatClient Launcher
 
-Launcher desktop independente para o GoatClient, com foco em **PvP e survival**: logo própria, seleção de versões, instalação de Minecraft/Fabric/Fabric API, download automático do Java necessário e perfis offline ou Microsoft. Versão do launcher: **0.1.0**. Versão incluída do client: **0.2.1 para Minecraft 26.3**. O client atual oferece cosméticos e HUD; não inclui vantagens de combate ou perfis separados por modo de jogo.
+Launcher desktop independente para o GoatClient, com foco em **PvP e survival**: logo própria, seleção de versões, instalação de Minecraft/Fabric/Fabric API, download automático do Java necessário e perfis offline ou Microsoft. Versão do launcher: **1.0.0**. Versão incluída do client: **0.2.1 para Minecraft 26.3**. O client atual oferece cosméticos e HUD; não inclui vantagens de combate ou perfis separados por modo de jogo.
 
 ## Abrir
 
@@ -67,7 +67,7 @@ Com um **JDK 25** disponível, execute no sistema de destino:
 
 No Windows: `gradlew.bat test :launcher:test :launcher:packageLauncher`.
 
-O ZIP aparece em `launcher/build/distributions/GoatClientLauncher-0.1.0-<sistema>-<arquitetura>.zip`. O aplicativo usa `jpackage` e inclui seu próprio runtime. O empacotamento nativo deve rodar em cada sistema de destino, conforme a [documentação do JDK](https://docs.oracle.com/en/java/javase/25/jpackage/packaging-overview.html).
+O ZIP aparece em `launcher/build/distributions/GoatClientLauncher-1.0.0-<sistema>-<arquitetura>.zip`. O aplicativo usa `jpackage` e inclui seu próprio runtime. O empacotamento nativo deve rodar em cada sistema de destino, conforme a [documentação do JDK](https://docs.oracle.com/en/java/javase/25/jpackage/packaging-overview.html).
 
 O workflow `.github/workflows/launcher.yml` está preparado para Linux x64, Windows x64, macOS ARM64 e macOS Intel. Depois de colocar este projeto em um repositório GitHub, execute **Build GoatClient Launcher** em Actions ou envie uma tag `launcher-v*`. Os ZIPs ficam nos artefatos da execução; não são publicados automaticamente em Releases. Os ambientes vêm das [imagens oficiais do GitHub Actions](https://github.com/actions/runner-images).
 

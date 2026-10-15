@@ -49,7 +49,7 @@ public final class LaunchCommand {
         values.put("classpath", classpath);
         values.put("classpath_separator", File.pathSeparator);
         values.put("launcher_name", "GoatClientLauncher");
-        values.put("launcher_version", "0.1.0");
+        values.put("launcher_version", "1.0.0");
         values.put("resolution_width", "1280");
         values.put("resolution_height", "720");
         Map<String, Boolean> features = Map.of("has_custom_resolution", true, "is_demo_user", false);

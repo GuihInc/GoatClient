@@ -8,7 +8,7 @@ O foco dos dois modos é personalização, informações na tela e conveniência
 
 O módulo `launcher/` instala o jogo e suas dependências, permite escolher versões e aceita novos releases por catálogo local ou HTTPS, sem recompilar o executável. Usa sua logo e oferece modo offline, login Microsoft preparado e ajuste de memória/Java.
 
-O pacote **Linux x64** foi gerado em `launcher/build/distributions/GoatClientLauncher-0.1.0-linux-x64.zip`. Extraia tudo e abra `GoatClientLauncher/bin/GoatClientLauncher`. O workflow em `.github/workflows/launcher.yml` está preparado para gerar também Windows x64 e macOS Intel/Apple Silicon; esses pacotes ainda não foram compilados nem testados neste ambiente Linux.
+O pacote **Linux x64** é gerado em `launcher/build/distributions/GoatClientLauncher-1.0.0-linux-x64.zip`. Extraia tudo e abra `GoatClientLauncher/bin/GoatClientLauncher`. O workflow em `.github/workflows/launcher.yml` também gera pacotes para Windows x64 e macOS Intel/Apple Silicon.
 
 O login Microsoft próprio ainda depende do Application ID que falta configurar. O launcher independente não reutiliza a sessão do launcher oficial; a opção de restauração descrita abaixo pertence ao mod em execução. [Instruções do launcher, compilação e publicação de novas versões](launcher/README.md).
 
