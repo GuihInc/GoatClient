@@ -6,7 +6,6 @@ import java.nio.file.Path;
 
 public final class LauncherSettings {
     public String nickname = "GoatPlayer";
-    public String microsoftClientId = "";
     public String catalogUrl = "";
     public String javaPath = "";
     public String selectedRelease = "";
@@ -20,7 +19,6 @@ public final class LauncherSettings {
             if (settings == null) throw new IllegalArgumentException();
             settings.memoryMb = Math.max(1024, Math.min(16384, settings.memoryMb));
             if (settings.nickname == null) settings.nickname = "GoatPlayer";
-            if (settings.microsoftClientId == null) settings.microsoftClientId = "";
             if (settings.catalogUrl == null) settings.catalogUrl = "";
             if (settings.javaPath == null) settings.javaPath = "";
             if (settings.selectedRelease == null) settings.selectedRelease = "";

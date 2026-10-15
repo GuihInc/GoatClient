@@ -1,6 +1,6 @@
 # GoatClient Launcher
 
-Launcher desktop independente para o GoatClient, com foco em **PvP e survival**: logo própria, seleção de versões, instalação de Minecraft/Fabric/Fabric API, download automático do Java necessário e perfis offline ou Microsoft. Versão do launcher: **1.0.0**. Versão incluída do client: **0.2.1 para Minecraft 26.3**. O client atual oferece cosméticos e HUD; não inclui vantagens de combate ou perfis separados por modo de jogo.
+Launcher desktop independente para o GoatClient, com foco em **PvP e survival**: logo própria, seleção de versões, instalação de Minecraft/Fabric/Fabric API, download automático do Java necessário e perfil offline. Versão do launcher: **1.0.1**. Versão incluída do client: **0.2.1 para Minecraft 26.3**. O client atual oferece cosméticos e HUD; não inclui vantagens de combate ou perfis separados por modo de jogo.
 
 ## Abrir
 
@@ -10,21 +10,15 @@ Extraia **todo** o ZIP correspondente ao seu sistema e arquitetura. Mantenha as 
 - **Windows x64:** abra `GoatClientLauncher/GoatClientLauncher.exe`.
 - **macOS:** abra `GoatClientLauncher.app`. Use o pacote `arm64` para Apple Silicon ou `x64` para Intel.
 
-O Java do launcher já acompanha o aplicativo. Na primeira instalação, ele baixa os arquivos oficiais do jogo, o Fabric, o Fabric API e, se necessário, um JRE Temurin da Adoptium. Não é necessário instalar Java manualmente para usar o pacote nativo. A conexão com a internet é necessária para a instalação inicial, novas versões e login Microsoft. O sistema também precisa das bibliotecas gráficas e dos drivers exigidos pelo Minecraft.
+O Java do launcher já acompanha o aplicativo. Na primeira instalação, ele baixa os arquivos oficiais do jogo, o Fabric, o Fabric API e, se necessário, um JRE Temurin da Adoptium. Não é necessário instalar Java manualmente para usar o pacote nativo. A conexão com a internet é necessária para a instalação inicial e novas versões. O sistema também precisa das bibliotecas gráficas e dos drivers exigidos pelo Minecraft.
 
-Em **Jogar**, escolha a versão, informe seu nick na aba **Offline** e clique em **Instalar e jogar**. Em **Configurações**, ajuste a memória ou selecione um executável Java próprio. O padrão é 2 GB para o jogo, independentemente da memória usada pelo launcher. O botão de cancelamento pede confirmação antes de encerrar um jogo aberto; salve seu mundo primeiro.
+Em **Jogar**, escolha a versão, informe seu nick offline e clique em **Instalar e jogar**. Em **Configurações**, ajuste a memória ou selecione um executável Java próprio. O padrão é 2 GB para o jogo, independentemente da memória usada pelo launcher. O botão de cancelamento pede confirmação antes de encerrar um jogo aberto; salve seu mundo primeiro.
 
 Estes pacotes são aplicativos portáveis, não instaladores MSI/DMG/DEB. Ainda não há assinatura de distribuição Windows nem assinatura/notarização Apple; o sistema pode apresentar avisos. Para distribuição pública, configure a assinatura apropriada.
 
-## Contas
+## Perfil offline
 
-**Offline:** disponível agora, para mundos locais e servidores que aceitam sessões offline. Não autentica propriedade de uma conta e não permite entrar em servidores que exigem login Microsoft válido.
-
-**Microsoft:** o fluxo por código no navegador está implementado, mas depende de um **Application (client) ID público próprio**, configurado para o fluxo Microsoft/Xbox/Minecraft. O projeto ainda não possui esse ID e o login real não foi validado. Quando estiver disponível, informe-o em Configurações. O launcher verifica a licença Java e o perfil antes de iniciar uma sessão online. Não usa IDs emprestados, não solicita client secret e não recebe sua senha. Referência: [protocolo oficial de código de dispositivo](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-device-code).
-
-Este launcher independente **não importa a sessão do launcher oficial**. A opção **Launcher** existente dentro do mod apenas restaura a sessão com que o Minecraft foi iniciado. Enquanto faltar o Application ID, uma conta original pode continuar usando o mod pelo launcher oficial com Fabric.
-
-Tokens não são salvos nas preferências. A sessão Microsoft fica em memória e deve ser refeita após reiniciar ou expirar. Para iniciar o jogo, os argumentos são colocados temporariamente em um arquivo restrito no diretório da instância; ele é removido ao encerrar normalmente. Uma interrupção abrupta do launcher ou do sistema pode impedir essa limpeza. Não compartilhe a pasta de dados durante uma sessão autenticada.
+O launcher usa um nick local, sem autenticação Microsoft. Ele serve para mundos locais e servidores que aceitam sessões offline; servidores que exigem uma conta Microsoft válida não aceitam esse perfil. O nick não comprova propriedade de uma conta Minecraft.
 
 ## Adicionar versões futuras
 
@@ -67,11 +61,11 @@ Com um **JDK 25** disponível, execute no sistema de destino:
 
 No Windows: `gradlew.bat test :launcher:test :launcher:packageLauncher`.
 
-O ZIP aparece em `launcher/build/distributions/GoatClientLauncher-1.0.0-<sistema>-<arquitetura>.zip`. O aplicativo usa `jpackage` e inclui seu próprio runtime. O empacotamento nativo deve rodar em cada sistema de destino, conforme a [documentação do JDK](https://docs.oracle.com/en/java/javase/25/jpackage/packaging-overview.html).
+O ZIP aparece em `launcher/build/distributions/GoatClientLauncher-1.0.1-<sistema>-<arquitetura>.zip`. O aplicativo usa `jpackage` e inclui seu próprio runtime. O empacotamento nativo deve rodar em cada sistema de destino, conforme a [documentação do JDK](https://docs.oracle.com/en/java/javase/25/jpackage/packaging-overview.html).
 
 O workflow `.github/workflows/launcher.yml` gera pacotes para Linux x64, Windows x64, macOS ARM64 e macOS Intel. No repositório, execute **Build GoatClient Launcher** em Actions ou envie uma tag `launcher-v*`. Os ZIPs ficam nos artefatos da execução; não são publicados automaticamente em Releases. Os ambientes vêm das [imagens oficiais do GitHub Actions](https://github.com/actions/runner-images).
 
-**Validado:** os 26 testes automatizados passaram nos quatro runners. O smoke test abriu o launcher nativo no Linux x64, Windows x64, macOS ARM64 e macOS Intel. Também testei no Linux a instalação completa de Minecraft 26.3 com Fabric/GoatClient, o download e a extração do JRE 25 e o início do jogo. Os ZIPs estão nos artefatos das [execuções do workflow](https://github.com/GuihInc/GoatClient/actions/workflows/launcher.yml). Entre na conta com acesso ao repositório privado, abra **Artifacts** e baixe o pacote da plataforma desejada. O login Microsoft real continua dependendo do Application ID do projeto.
+Os pacotes da versão 1.0.1 estarão nos artefatos da [execução do workflow](https://github.com/GuihInc/GoatClient/actions/workflows/launcher.yml). Entre na conta com acesso ao repositório privado, abra a execução mais recente de **Build GoatClient Launcher** e baixe o artefato da sua plataforma.
 
 Para executar o launcher a partir do código:
 

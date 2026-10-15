@@ -2,6 +2,12 @@ name: Build GoatClient Launcher
 
 on:
   workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: 'Empacotar sem executar a suíte de testes'
+        required: false
+        type: boolean
+        default: false
   push:
     tags: ['launcher-v*']
 
@@ -24,7 +30,11 @@ jobs:
           cache: gradle
       - name: Test and package native launcher
         shell: bash
-        run: ./gradlew test :launcher:test :launcher:packageLauncher --no-daemon
+        run: |
+          if [ "${{ inputs.skip_tests }}" != "true" ]; then
+            ./gradlew test :launcher:test --no-daemon
+          fi
+          ./gradlew :launcher:packageLauncher --no-daemon
       - name: Smoke test bundled launcher
         shell: bash
         run: |

@@ -1,7 +1,5 @@
 package dev.goatclient.launcher;
 
-import dev.goatclient.auth.MicrosoftAccount;
-import dev.goatclient.auth.MicrosoftAuth;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Desktop;
@@ -49,14 +47,8 @@ public final class LauncherFrame extends JFrame {
     private final JComboBox<ReleaseCatalog.Release> versions = new JComboBox<>();
     private final JTextField nickname = new JTextField();
     private final JTextField catalogUrl = new JTextField();
-    private final JTextField applicationId = new JTextField();
     private final JTextField javaPath = new JTextField();
     private final JSpinner memory;
-    private final JTabbedPane accounts = new JTabbedPane();
-    private final JLabel accountStatus = new JLabel("Nenhuma conta Microsoft conectada.");
-    private final JTextField deviceCode = new JTextField();
-    private final JButton browser = new JButton("Abrir Microsoft");
-    private final JButton login = new JButton("Entrar com Microsoft");
     private final JButton play = new JButton("INSTALAR E JOGAR");
     private final JButton refresh = new JButton("Verificar versões");
     private final JButton importCatalog = new JButton("Importar catálogo...");
@@ -64,8 +56,6 @@ public final class LauncherFrame extends JFrame {
     private final JButton cancel = new JButton("Cancelar");
     private final JLabel status = new JLabel("Pronto para jogar.");
     private final JProgressBar progressBar = new JProgressBar();
-    private MicrosoftAccount microsoft;
-    private URI verificationUri;
     private volatile String progress = "Pronto para jogar.";
     private Thread task;
     private boolean busy;
@@ -125,13 +115,10 @@ public final class LauncherFrame extends JFrame {
         add(bottom, BorderLayout.SOUTH);
 
         nickname.setText(settings.nickname);
-        applicationId.setText(settings.microsoftClientId);
         catalogUrl.setText(settings.catalogUrl);
         javaPath.setText(settings.javaPath);
         loadVersions();
         play.addActionListener(event -> launch());
-        login.addActionListener(event -> authenticate());
-        browser.addActionListener(event -> openBrowser());
         refresh.addActionListener(event -> refreshVersions());
         importCatalog.addActionListener(event -> importVersions());
         saveSettings.addActionListener(event -> {
@@ -192,32 +179,12 @@ public final class LauncherFrame extends JFrame {
         JPanel profile = vertical();
         profile.add(label("SEU PERFIL"));
         profile.add(Box.createVerticalStrut(14));
-        JPanel offline = vertical();
-        offline.setBorder(BorderFactory.createEmptyBorder(14, 12, 12, 12));
-        offline.add(new JLabel("Nick offline"));
-        offline.add(Box.createVerticalStrut(8));
+        profile.add(new JLabel("Nick offline"));
+        profile.add(Box.createVerticalStrut(8));
         nickname.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
-        offline.add(nickname);
-        offline.add(Box.createVerticalStrut(14));
-        offline.add(note("Para mundos locais e servidores que aceitam conexões offline."));
-        JPanel online = vertical();
-        online.setBorder(BorderFactory.createEmptyBorder(14, 12, 12, 12));
-        online.add(accountStatus);
-        online.add(Box.createVerticalStrut(12));
-        online.add(login);
-        online.add(Box.createVerticalStrut(12));
-        deviceCode.setEditable(false);
-        deviceCode.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
-        deviceCode.setText("O código de login aparecerá aqui");
-        online.add(deviceCode);
-        online.add(Box.createVerticalStrut(8));
-        browser.setEnabled(false);
-        online.add(browser);
-        online.add(Box.createVerticalStrut(12));
-        online.add(note("O login é feito no navegador Microsoft. Configure o Application ID do projeto em Configurações."));
-        accounts.addTab("Offline", offline);
-        accounts.addTab("Microsoft", online);
-        profile.add(accounts);
+        profile.add(nickname);
+        profile.add(Box.createVerticalStrut(14));
+        profile.add(note("Perfil offline para mundos locais e servidores que aceitam conexões offline."));
         page.add(profile);
         return page;
     }
@@ -228,7 +195,6 @@ public final class LauncherFrame extends JFrame {
         field(panel, "Memória do Minecraft (MB)", memory);
         field(panel, "Java personalizado (opcional; deixe vazio para seleção automática)", javaPath);
         field(panel, "Endereço HTTPS do catálogo de atualizações (opcional)", catalogUrl);
-        field(panel, "Application (client) ID Microsoft do GoatClient", applicationId);
         panel.add(saveSettings);
         panel.add(Box.createVerticalStrut(12));
         JButton folder = new JButton("Abrir pasta do launcher");
@@ -246,47 +212,12 @@ public final class LauncherFrame extends JFrame {
             var release = (ReleaseCatalog.Release) versions.getSelectedItem();
             if (release == null) throw new IllegalStateException("Escolha uma versão para jogar.");
             LaunchCommand.Account account;
-            if (accounts.getSelectedIndex() == 0) account = LaunchCommand.Account.offline(nickname.getText());
-            else {
-                if (microsoft == null) throw new IllegalStateException("Entre com sua conta Microsoft antes de jogar.");
-                account = LaunchCommand.Account.microsoft(microsoft);
-            }
+            account = LaunchCommand.Account.offline(nickname.getText());
             work("Preparando instalação...", () -> runner.run(root, release, settings, account, downloads, true,
                     text -> progress = text), result -> {
                 if (result != 0) error(new IllegalStateException("O Minecraft encerrou com erro. Veja launcher.log na pasta da versão."));
             });
         } catch (Exception exception) { error(exception); }
-    }
-
-    private void authenticate() {
-        try {
-            save();
-            String id = settings.microsoftClientId.strip();
-            if (id.isBlank()) throw new IllegalStateException("O login Microsoft próprio depende de um Application ID. Configure o aplicativo do GoatClient para ativar essa opção.");
-            work("Solicitando código Microsoft...", () -> {
-                var auth = new MicrosoftAuth();
-                var code = auth.begin(id);
-                SwingUtilities.invokeLater(() -> {
-                    if (!busy || !isDisplayable()) return;
-                    verificationUri = code.verificationUri();
-                    deviceCode.setText(code.userCode());
-                    browser.setEnabled(true);
-                });
-                progress = "Abra a Microsoft e informe o código mostrado na aba Microsoft.";
-                return auth.finish(code, text -> progress = text);
-            }, account -> {
-                microsoft = account;
-                accountStatus.setText("Conectado: " + account.name());
-                deviceCode.setText("Login concluído");
-                browser.setEnabled(false);
-                progress = "Conta Microsoft conectada.";
-            });
-        } catch (Exception exception) { error(exception); }
-    }
-
-    private void openBrowser() {
-        try { if (verificationUri != null) Desktop.getDesktop().browse(verificationUri); }
-        catch (Exception exception) { error(new IllegalStateException("Abra no navegador: " + verificationUri)); }
     }
 
     private void refreshVersions() {
@@ -320,7 +251,6 @@ public final class LauncherFrame extends JFrame {
 
     private void save() throws Exception {
         settings.nickname = nickname.getText().strip();
-        settings.microsoftClientId = applicationId.getText().strip();
         settings.catalogUrl = catalogUrl.getText().strip();
         settings.javaPath = javaPath.getText().strip();
         settings.memoryMb = (Integer) memory.getValue();
@@ -344,7 +274,6 @@ public final class LauncherFrame extends JFrame {
             SwingUtilities.invokeLater(() -> {
                 if (generation != operation || !isDisplayable()) return;
                 setBusy(false);
-                browser.setEnabled(false);
                 if (error instanceof InterruptedException) progress = "Operação cancelada.";
                 else if (error != null) error(error);
                 else success.accept(value);
@@ -354,7 +283,7 @@ public final class LauncherFrame extends JFrame {
 
     private void setBusy(boolean value) {
         busy = value;
-        for (var component : new javax.swing.JComponent[]{play, refresh, importCatalog, login, saveSettings, versions, nickname}) component.setEnabled(!value);
+        for (var component : new javax.swing.JComponent[]{play, refresh, importCatalog, saveSettings, versions, nickname}) component.setEnabled(!value);
         cancel.setEnabled(value);
         progressBar.setIndeterminate(value);
     }

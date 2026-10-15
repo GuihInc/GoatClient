@@ -62,7 +62,7 @@ public final class GoatScreen extends Screen {
                 "Contas", button -> minecraft.gui.setScreen(new AccountScreen(this)), () -> false);
         accounts.active = AccountManager.canSwitch(minecraft);
         accounts.setTooltip(Tooltip.create(Component.literal(accounts.active
-                ? "Conta do launcher, Microsoft ou modo offline."
+                ? "Perfil offline do GoatClient."
                 : "Saia do mundo ou servidor para trocar de conta.")));
         addRenderableWidget(accounts);
         addRenderableWidget(new GoatButton(left + panelWidth - 78, top + panelHeight - 28,
