@@ -3,6 +3,7 @@ package dev.goatclient.launcher;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.gson.JsonParser;
+import dev.goatclient.auth.AuthSettings;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,6 +19,10 @@ class LauncherTest {
     private final Platform linux = new Platform("linux", "x86_64", "7.0.0");
     private final Platform windows = new Platform("windows", "x86_64", "10.0.22631");
     private final Platform mac = new Platform("osx", "aarch64", "15.5");
+
+    @Test void usesTheRegisteredPublicMicrosoftApplicationId() {
+        assertEquals("d1fa3c11-c22b-43e1-a6fa-4027c342c7e1", AuthSettings.DEFAULT_MICROSOFT_CLIENT_ID);
+    }
 
     @Test void importsFutureReleasesWithoutReplacingTheBundledClient() throws Exception {
         Path jar = directory.resolve("next.jar");

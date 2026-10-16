@@ -8,9 +8,9 @@ O foco dos dois modos é personalização, informações na tela e conveniência
 
 O módulo `launcher/` instala o jogo e suas dependências, permite escolher versões e aceita novos releases por catálogo local ou HTTPS, sem recompilar o executável. Usa sua logo, oferece perfil offline e ajuste de memória/Java.
 
-Os pacotes Linux x64, Windows x64, macOS Intel e macOS Apple Silicon da versão **1.0.7** são publicados em [Releases](https://github.com/GuihInc/GoatClient/releases); o repositório é privado e exige acesso à conta GuihInc.
+Os pacotes Linux x64, Windows x64, macOS Intel e macOS Apple Silicon da versão **1.0.8** são publicados em [Releases](https://github.com/GuihInc/GoatClient/releases); o repositório é privado e exige acesso à conta GuihInc.
 
-O launcher usa somente perfis offline, para mundos locais e servidores que aceitam esse tipo de sessão. [Instruções do launcher e publicação de novas versões](launcher/README.md).
+O launcher oferece login Microsoft para contas com Minecraft Java e perfil offline para mundos locais e servidores que aceitam esse tipo de sessão. [Instruções do launcher e publicação de novas versões](launcher/README.md).
 
 ## O que já funciona
 
@@ -77,7 +77,7 @@ Há também um teste gráfico opcional que abre o Minecraft, navega pelo guarda-
 
 Ele exige uma sessão gráfica e usa uma instalação separada em `build/run/clientGameTest/`. O mod de teste não é incluído no JAR de distribuição. As capturas ficam em `build/run/clientGameTest/screenshots/`.
 
-Validação: compilação concluída, 18 testes locais de autenticação/persistência aprovados e teste gráfico aprovado no Minecraft 26.3, incluindo troca offline, restauração do launcher, isolamento dos cosméticos e recuperação de uma troca malsucedida. O login Microsoft com conta real não foi validado, pois depende do Application ID e da autorização do usuário no navegador. As imagens ficam no diretório de screenshots do teste gráfico.
+Validação: compilação concluída, testes locais de autenticação/persistência aprovados e teste gráfico aprovado no Minecraft 26.3, incluindo troca offline, restauração do launcher, isolamento dos cosméticos e recuperação de uma troca malsucedida. O fluxo Microsoft usa o Application ID público do GoatClient; o login com uma conta real ainda precisa ser concluído no navegador. As imagens ficam no diretório de screenshots do teste gráfico.
 
 Versões fixadas: Minecraft 26.3, Fabric Loader 0.19.5, Fabric API 0.163.0+26.3, Loom 1.17.21, Gradle 9.6.0 e Java 25. A versão 26.3 usa os nomes públicos das classes do Minecraft e não precisa de Yarn. Referência técnica: [Fabric para Minecraft 26.3](https://www.fabricmc.net/2026/09/15/263.html).
 
@@ -87,6 +87,6 @@ Versões fixadas: Minecraft 26.3, Fabric Loader 0.19.5, Fabric API 0.163.0+26.3,
 
 ## Próxima etapa do produto
 
-Os cosméticos desta versão são locais. Para que outros jogadores também vejam asas, pets ou emotes, seria necessário um serviço de sincronização por UUID e renderização compartilhada. O pet e os emotes não são enviados ao servidor. Para distribuição pública, faltam hospedar um catálogo confiável, configurar o aplicativo Microsoft e assinar os executáveis.
+Os cosméticos desta versão são locais. Para que outros jogadores também vejam asas, pets ou emotes, seria necessário um serviço de sincronização por UUID e renderização compartilhada. O pet e os emotes não são enviados ao servidor. Para distribuição pública, faltam hospedar um catálogo confiável e assinar os executáveis.
 
 Produto independente; não é um produto oficial da Mojang ou Microsoft e não é afiliado ao Lunar Client ou Badlion.

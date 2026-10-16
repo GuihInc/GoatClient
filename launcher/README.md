@@ -1,6 +1,6 @@
 # GoatClient Launcher
 
-Launcher desktop independente para o GoatClient, com foco em **PvP e survival**: logo própria, seleção de versões, instalação de Minecraft/Fabric/Fabric API, download automático do Java necessário e perfil offline. Versão do launcher: **1.0.7**. A versão do client depende do catálogo selecionado; o client oferece capas e asas 3D, pets low-poly no ombro, emotes locais, editor visual de nick e um menu modular de HUD. Não inclui vantagens de combate ou perfis separados por modo de jogo.
+Launcher desktop independente para o GoatClient, com foco em **PvP e survival**: logo própria, seleção de versões, instalação de Minecraft/Fabric/Fabric API, download automático do Java necessário e login Microsoft ou perfil offline. Versão do launcher: **1.0.8**. A versão do client depende do catálogo selecionado; o client oferece capas e asas 3D, pets low-poly no ombro, emotes locais, editor visual de nick e um menu modular de HUD. Não inclui vantagens de combate ou perfis separados por modo de jogo.
 
 ## Abrir
 
@@ -12,13 +12,17 @@ Extraia **todo** o ZIP correspondente ao seu sistema e arquitetura. Mantenha as 
 
 O Java do launcher já acompanha o aplicativo. Na primeira instalação, ele baixa os arquivos oficiais do jogo, o Fabric, o Fabric API e, se necessário, um JRE Temurin da Adoptium. Não é necessário instalar Java manualmente para usar o pacote nativo. A conexão com a internet é necessária para a instalação inicial e novas versões. O sistema também precisa das bibliotecas gráficas e dos drivers exigidos pelo Minecraft.
 
-Em **Jogar**, escolha a versão, informe seu nick offline e clique em **Instalar e jogar**. Em **Configurações**, ajuste a memória, selecione um executável Java próprio ou altere o diretório dos dados e instalações. A troca do diretório vale ao reabrir o launcher; ela não move nem apaga os dados antigos. O padrão é 2 GB para o jogo, independentemente da memória usada pelo launcher. O botão de cancelamento pede confirmação antes de encerrar um jogo aberto; salve seu mundo primeiro.
+Em **Jogar**, escolha a versão, clique em **Entrar com Microsoft** para autenticar uma conta com licença de Minecraft Java; depois clique em **Instalar e jogar**. Para mundos locais ou servidores que aceitam sessão offline, selecione **Usar perfil offline**, informe um nick e jogue. Em **Configurações**, ajuste a memória, selecione um executável Java próprio ou altere o diretório dos dados e instalações. A troca do diretório vale ao reabrir o launcher; ela não move nem apaga os dados antigos. O padrão é 2 GB para o jogo, independentemente da memória usada pelo launcher. O botão de cancelamento pede confirmação antes de encerrar um jogo aberto; salve seu mundo primeiro.
 
 Estes pacotes são aplicativos portáveis, não instaladores MSI/DMG/DEB. Ainda não há assinatura de distribuição Windows nem assinatura/notarização Apple; o sistema pode apresentar avisos. Para distribuição pública, configure a assinatura apropriada.
 
 ## Perfil offline
 
-O launcher usa um nick local, sem autenticação Microsoft. Ele serve para mundos locais e servidores que aceitam sessões offline; servidores que exigem uma conta Microsoft válida não aceitam esse perfil. O nick não comprova propriedade de uma conta Minecraft.
+O perfil offline usa um nick local, sem autenticação Microsoft. Ele serve para mundos locais e servidores que aceitam sessões offline; servidores que exigem uma conta Microsoft válida não aceitam esse perfil. O nick não comprova propriedade de uma conta Minecraft. A sessão Microsoft fica apenas na memória enquanto o launcher está aberto; ao reabri-lo, entre novamente. Nenhuma senha ou token é salva nas configurações.
+
+### Configuração da conta Microsoft
+
+O GoatClient usa o fluxo de código de dispositivo e o Application (client) ID público registrado no Microsoft Entra. O app precisa aceitar **contas pessoais Microsoft** (ou contas organizacionais e pessoais) e ser um cliente público para permitir esse fluxo. Não crie nem compartilhe um client secret. Ao clicar em **Entrar com Microsoft**, o launcher abre `microsoft.com/link`; digite o código exibido e conclua a autorização no navegador. Use uma conta com licença de Minecraft Java e perfil Java configurado.
 
 ## Adicionar versões futuras
 
@@ -61,11 +65,11 @@ Com um **JDK 25** disponível, execute no sistema de destino:
 
 No Windows: `gradlew.bat test :launcher:test :launcher:packageLauncher`.
 
-O ZIP aparece em `launcher/build/distributions/GoatClientLauncher-1.0.7-<sistema>-<arquitetura>.zip`. O aplicativo usa `jpackage` e inclui seu próprio runtime. O build converte a logo do GoatClient para os formatos `.ico` e `.icns` no Windows e macOS; no Linux, usa o PNG original. O empacotamento nativo deve rodar em cada sistema de destino, conforme a [documentação do JDK](https://docs.oracle.com/en/java/javase/25/jpackage/packaging-overview.html).
+O ZIP aparece em `launcher/build/distributions/GoatClientLauncher-1.0.8-<sistema>-<arquitetura>.zip`. O aplicativo usa `jpackage` e inclui seu próprio runtime. O build converte a logo do GoatClient para os formatos `.ico` e `.icns` no Windows e macOS; no Linux, usa o PNG original. O empacotamento nativo deve rodar em cada sistema de destino, conforme a [documentação do JDK](https://docs.oracle.com/en/java/javase/25/jpackage/packaging-overview.html).
 
 O workflow `.github/workflows/launcher.yml` gera pacotes para Linux x64, Windows x64, macOS ARM64 e macOS Intel. No repositório, execute **Build GoatClient Launcher** em Actions para gerar artefatos temporários, ou envie uma tag `launcher-v*` para criar um GitHub Release com os quatro ZIPs anexados. Os ambientes vêm das [imagens oficiais do GitHub Actions](https://github.com/actions/runner-images).
 
-O release 1.0.7 e seus pacotes estarão em [Releases](https://github.com/GuihInc/GoatClient/releases). Entre na conta com acesso ao repositório privado para baixar o ZIP da sua plataforma.
+O release 1.0.8 e seus pacotes estarão em [Releases](https://github.com/GuihInc/GoatClient/releases). Entre na conta com acesso ao repositório privado para baixar o ZIP da sua plataforma.
 
 Para executar o launcher a partir do código:
 

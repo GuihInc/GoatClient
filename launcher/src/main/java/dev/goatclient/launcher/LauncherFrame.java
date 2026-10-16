@@ -13,6 +13,9 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
+import dev.goatclient.auth.AuthSettings;
+import dev.goatclient.auth.MicrosoftAccount;
+import dev.goatclient.auth.MicrosoftAuth;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -48,6 +51,9 @@ public final class LauncherFrame extends JFrame {
     private final JTextField nickname = new JTextField();
     private final JTextField catalogUrl = new JTextField();
     private final JTextField javaPath = new JTextField();
+    private final JButton microsoftLogin = new JButton("Entrar com Microsoft");
+    private final JButton offlineMode = new JButton("Usar perfil offline");
+    private final JLabel accountStatus = new JLabel("Sessão offline");
     private final JSpinner memory;
     private final JButton play = new JButton("INSTALAR E JOGAR");
     private final JButton refresh = new JButton("Verificar versões");
@@ -60,6 +66,7 @@ public final class LauncherFrame extends JFrame {
     private volatile String progress = "Pronto para jogar.";
     private Thread task;
     private boolean busy;
+    private LaunchCommand.Account microsoftAccount;
     private int operation;
     private final Timer statusTimer;
 
@@ -126,6 +133,12 @@ public final class LauncherFrame extends JFrame {
             try { save(); progress = "Configurações salvas."; }
             catch (Exception exception) { error(exception); }
         });
+        microsoftLogin.addActionListener(event -> microsoftLogin());
+        offlineMode.addActionListener(event -> {
+            microsoftAccount = null;
+            accountStatus.setText("Sessão offline");
+            progress = "O launcher usará o perfil offline.";
+        });
         cancel.addActionListener(event -> {
             if (runner.gameRunning() && JOptionPane.showConfirmDialog(this,
                     "Encerrar Minecraft agora? Salve seu mundo antes de continuar.", "Encerrar jogo",
@@ -180,12 +193,18 @@ public final class LauncherFrame extends JFrame {
         JPanel profile = vertical();
         profile.add(label("SEU PERFIL"));
         profile.add(Box.createVerticalStrut(14));
-        profile.add(new JLabel("Nick offline"));
+        profile.add(new JLabel("Nick do perfil offline"));
         profile.add(Box.createVerticalStrut(8));
         nickname.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
         profile.add(nickname);
         profile.add(Box.createVerticalStrut(14));
-        profile.add(note("Perfil offline para mundos locais e servidores que aceitam conexões offline."));
+        profile.add(accountStatus);
+        profile.add(Box.createVerticalStrut(10));
+        profile.add(microsoftLogin);
+        profile.add(Box.createVerticalStrut(8));
+        profile.add(offlineMode);
+        profile.add(Box.createVerticalStrut(12));
+        profile.add(note("Microsoft: use sua conta com licença Minecraft Java. Offline: mundos locais e servidores que aceitam sessões offline."));
         page.add(profile);
         return page;
     }
@@ -240,8 +259,13 @@ public final class LauncherFrame extends JFrame {
             save();
             var release = (ReleaseCatalog.Release) versions.getSelectedItem();
             if (release == null) throw new IllegalStateException("Escolha uma versão para jogar.");
-            LaunchCommand.Account account;
-            account = LaunchCommand.Account.offline(nickname.getText());
+            LaunchCommand.Account account = microsoftAccount != null
+                    && microsoftAccount.expiresAt().isAfter(java.time.Instant.now())
+                    ? microsoftAccount : LaunchCommand.Account.offline(nickname.getText());
+            if (microsoftAccount != null && !account.online()) {
+                microsoftAccount = null;
+                accountStatus.setText("Sessão expirada — offline");
+            }
             work("Preparando instalação...", () -> runner.run(root, release, settings, account, downloads, true,
                     text -> progress = text), result -> {
                 if (result != 0) error(new IllegalStateException("O Minecraft encerrou com erro. Veja launcher.log na pasta da versão."));
@@ -260,6 +284,27 @@ public final class LauncherFrame extends JFrame {
                 catch (Exception exception) { error(exception); }
             });
         } catch (Exception exception) { error(exception); }
+    }
+
+    private void microsoftLogin() {
+        MicrosoftAuth auth = new MicrosoftAuth();
+        work("Solicitando autorização Microsoft...", () -> {
+            var code = auth.begin(AuthSettings.DEFAULT_MICROSOFT_CLIENT_ID);
+            SwingUtilities.invokeAndWait(() -> {
+                try {
+                    if (Desktop.isDesktopSupported()) Desktop.getDesktop().browse(code.verificationUri());
+                } catch (Exception ignored) { /* The URL and code remain visible below. */ }
+                JOptionPane.showMessageDialog(this,
+                        "A página de autorização foi aberta. Entre com a conta Microsoft que possui Minecraft Java e informe este código:\n\n"
+                                + code.userCode() + "\n\nSe o navegador não abriu, acesse " + code.verificationUri(),
+                        "Entrar com Microsoft", JOptionPane.INFORMATION_MESSAGE);
+            });
+            return auth.finish(code, text -> progress = text);
+        }, account -> {
+            microsoftAccount = LaunchCommand.Account.microsoft(account);
+            accountStatus.setText("Microsoft: " + account.name());
+            progress = "Conta Microsoft conectada. O token fica apenas na memória do launcher.";
+        });
     }
 
     private void importVersions() {
@@ -312,7 +357,8 @@ public final class LauncherFrame extends JFrame {
 
     private void setBusy(boolean value) {
         busy = value;
-        for (var component : new javax.swing.JComponent[]{play, refresh, importCatalog, saveSettings, versions, nickname}) component.setEnabled(!value);
+        for (var component : new javax.swing.JComponent[]{play, refresh, importCatalog, saveSettings, versions,
+                nickname, microsoftLogin, offlineMode}) component.setEnabled(!value);
         cancel.setEnabled(value);
         progressBar.setIndeterminate(value);
     }
