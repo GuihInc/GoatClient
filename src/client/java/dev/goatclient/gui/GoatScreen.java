@@ -21,6 +21,7 @@ public final class GoatScreen extends Screen {
     private final Screen parent;
     private final Supplier<PlayerSkin> skinLookup;
     private boolean hudTab;
+    private boolean emoteTab;
     private int left;
     private int top;
     private int panelWidth;
@@ -46,7 +47,7 @@ public final class GoatScreen extends Screen {
         contentX = left + sidebar + 12;
         contentWidth = panelWidth - sidebar - 24;
         previewX = 0;
-        if (!hudTab && panelWidth >= 600) {
+        if (!hudTab && !emoteTab && panelWidth >= 600) {
             contentWidth -= 144;
             previewX = contentX + contentWidth + 12;
             PlayerSkinWidget skin = new PlayerSkinWidget(120, panelHeight - 154,
@@ -59,7 +60,9 @@ public final class GoatScreen extends Screen {
                 "Cosméticos", button -> switchTab(false), () -> !hudTab));
         addRenderableWidget(new GoatButton(left + 10, top + 94, sidebar - 20, 24,
                 "Mods", button -> switchTab(true), () -> hudTab));
-        var accounts = new GoatButton(left + 10, top + 124, sidebar - 20, 24,
+        addRenderableWidget(new GoatButton(left + 10, top + 124, sidebar - 20, 24,
+                "Emotes", button -> switchToEmotes(), () -> emoteTab));
+        var accounts = new GoatButton(left + 10, top + 154, sidebar - 20, 24,
                 "Contas", button -> minecraft.gui.setScreen(new AccountScreen(this)), () -> false);
         accounts.active = AccountManager.canSwitch(minecraft);
         accounts.setTooltip(Tooltip.create(Component.literal(accounts.active
@@ -70,22 +73,33 @@ public final class GoatScreen extends Screen {
                 66, 20, "Voltar", button -> onClose(), () -> false));
 
         if (hudTab) initHud();
+        else if (emoteTab) initEmotes();
         else initWardrobe();
     }
 
     private void switchTab(boolean hud) {
         hudTab = hud;
+        emoteTab = false;
+        rebuildWidgets();
+    }
+
+    private void switchToEmotes() {
+        hudTab = false;
+        emoteTab = true;
         rebuildWidgets();
     }
 
     private void initWardrobe() {
         ProfileSettings profile = GoatClient.profile();
         int cardWidth = (contentWidth - 8) / 2;
-        int cardHeight = 48;
+        boolean compact = panelHeight < 300;
+        int cardHeight = compact ? 30 : 48;
+        int cardTop = compact ? 74 : 82;
+        int rowGap = compact ? 4 : 6;
         int index = 0;
         for (CapeStyle cape : CapeStyle.values()) {
             int x = contentX + (index % 2) * (cardWidth + 8);
-            int y = top + 82 + (index / 2) * (cardHeight + 6);
+            int y = top + cardTop + (index / 2) * (cardHeight + rowGap);
             var card = new GoatButton(x, y, cardWidth, cardHeight, cape.title(), button -> {
                 profile.cape = cape.id();
                 GoatClient.save();
@@ -96,16 +110,21 @@ public final class GoatScreen extends Screen {
             addRenderableWidget(card);
             index++;
         }
-        toggle(contentX, top + 194, contentWidth, "Cosméticos",
+        int toggleTop = compact ? 144 : 194;
+        int toggleGap = compact ? 25 : 28;
+        toggle(contentX, top + toggleTop, contentWidth, "Cosméticos",
                 () -> profile.cosmeticsEnabled, () -> profile.cosmeticsEnabled = !profile.cosmeticsEnabled);
-        toggle(contentX, top + 222, contentWidth, "Asas (visíveis usando elytra)",
+        toggle(contentX, top + toggleTop + toggleGap, contentWidth, "Asas (visíveis usando elytra)",
                 () -> profile.wingsEnabled, () -> profile.wingsEnabled = !profile.wingsEnabled);
-        toggle(contentX, top + 250, contentWidth, "Pet cabrito no HUD",
+        toggle(contentX, top + toggleTop + toggleGap * 2, contentWidth, "Pet cabrito no HUD",
                 () -> profile.petEnabled, () -> profile.petEnabled = !profile.petEnabled);
+    }
+
+    private void initEmotes() {
         int emoteWidth = (contentWidth - 16) / 3;
-        emote(contentX, top + 292, emoteWidth, "GG", "GG!");
-        emote(contentX + emoteWidth + 8, top + 292, emoteWidth, "Coração", "<3");
-        emote(contentX + (emoteWidth + 8) * 2, top + 292, emoteWidth, "Aceno", "o/");
+        emote(contentX, top + 94, emoteWidth, "GG", "GG!");
+        emote(contentX + emoteWidth + 8, top + 94, emoteWidth, "Coração", "<3");
+        emote(contentX + (emoteWidth + 8) * 2, top + 94, emoteWidth, "Aceno", "o/");
     }
 
     private void initHud() {
@@ -168,18 +187,21 @@ public final class GoatScreen extends Screen {
         graphics.text(font, status, left + panelWidth - 16 - font.width(status), top + 30,
                 GoatClient.preferencesSaved() ? MUTED : 0xFFFFB36B, false);
 
-        graphics.text(font, "SEU PERFIL", left + 12, top + 164, MUTED, false);
-        graphics.text(font, font.plainSubstrByWidth(name, sidebar - 24), left + 12, top + 179, TEXT, false);
-        if (panelHeight >= 270) graphics.text(font, minecraft.getUser().getProfileId().toString().substring(0, 8),
-                left + 12, top + 194, MUTED, false);
-        graphics.text(font, hudTab ? "Mods do HUD" : "Guarda-roupa e emotes", contentX, top + 64, TEXT, false);
+        if (panelHeight >= 280) {
+            graphics.text(font, "SEU PERFIL", left + 12, top + 204, MUTED, false);
+            graphics.text(font, font.plainSubstrByWidth(name, sidebar - 24), left + 12, top + 219, TEXT, false);
+            graphics.text(font, minecraft.getUser().getProfileId().toString().substring(0, 8), left + 12, top + 234, MUTED, false);
+        }
+        String pageTitle = hudTab ? "Mods do HUD" : emoteTab ? "Emotes rápidos" : "Guarda-roupa";
+        graphics.text(font, pageTitle, contentX, top + 64, TEXT, false);
         if (previewX != 0) {
             graphics.fill(previewX, top + 82, previewX + 120, top + panelHeight - 46, 0xFF0D151D);
             graphics.centeredText(font, "Sua skin", previewX + 60, top + 65, MUTED);
             graphics.centeredText(font, "Arraste para girar", previewX + 60, top + panelHeight - 55, MUTED);
         }
-        String footer = hudTab ? "Módulos locais • configurações por jogador" : "Cosméticos locais • asas aparecem com elytra";
-        graphics.text(font, font.plainSubstrByWidth(footer, panelWidth - 100),
+        String footer = hudTab ? "Módulos locais • configurações por jogador"
+                : emoteTab ? "Emotes locais • nada é enviado ao chat" : "Cosméticos locais • asas aparecem com elytra";
+        if (panelHeight >= 280) graphics.text(font, font.plainSubstrByWidth(footer, panelWidth - 100),
                 left + 12, top + panelHeight - 22, MUTED, false);
         super.extractRenderState(graphics, mouseX, mouseY, delta);
     }

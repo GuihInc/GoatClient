@@ -26,10 +26,10 @@ public final class GoatHud {
         if (profile.showDirection) {
             String[] directions = {"S", "SW", "W", "NW", "N", "NE", "E", "SE"};
             int direction = Math.floorMod((int) Math.floor((client.player.getYRot() + 22.5F) / 45.0F), 8);
-            y = line(graphics, "DIRECTION  " + directions[direction], y);
+            y = line(graphics, "DIREÇÃO  " + directions[direction], y);
         }
-        if (profile.showClock) y = line(graphics, "TIME  " + LocalTime.now().withNano(0), y);
-        if (profile.showSprintStatus) y = line(graphics, "SPRINT  " + (client.player.isSprinting() ? "ON" : "OFF"), y);
+        if (profile.showClock) y = line(graphics, "HORA  " + LocalTime.now().withNano(0), y);
+        if (profile.showSprintStatus) y = line(graphics, "CORRIDA  " + (client.player.isSprinting() ? "ON" : "OFF"), y);
         if (profile.showKeystrokes) {
             y += 4;
             key(graphics, client.options.keyUp, 30, y, 20);

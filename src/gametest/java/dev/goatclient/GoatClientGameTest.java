@@ -59,6 +59,7 @@ public final class GoatClientGameTest implements FabricClientGameTest {
         context.clickScreenButton("Pet cabrito no HUD: OFF");
         context.runOnClient(client -> require(GoatClient.profile().petEnabled,
                 "Pet toggle did not update the profile"));
+        context.clickScreenButton("Emotes");
         context.clickScreenButton("GG");
         context.runOnClient(client -> require("GG!".equals(dev.goatclient.hud.EmoteOverlay.current()),
                 "Local emote did not appear"));
