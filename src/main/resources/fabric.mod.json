@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "GoatClient",
   "icon": "assets/goatclient/textures/gui/logo.png",
-  "description": "Client para Minecraft 26.3: capas, HUD e contas Microsoft/launcher/offline.",
+  "description": "Client para Minecraft 26.3: menu de mods/HUD, capas, asas, pet e emotes locais.",
   "authors": ["GoatClient"],
   "environment": "client",
   "entrypoints": {

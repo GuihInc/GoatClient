@@ -2,7 +2,7 @@
 
 Client com foco em **PvP e survival para Minecraft Java Edition 26.3**, distribuído como mod Fabric, com launcher desktop independente. Interface escura com detalhes verdes, guarda-roupa, gerenciamento de contas e preferências vinculadas ao UUID da sessão ativa.
 
-O foco dos dois modos é personalização, informações na tela e conveniência, sem modificar alcance, automatizar ataques ou incluir outras vantagens de combate. O HUD atual oferece FPS, coordenadas e teclas; ainda não há perfis de configuração específicos para PvP e survival.
+O foco dos dois modos é personalização, informações na tela e conveniência, sem modificar alcance, automatizar ataques ou incluir outras vantagens de combate. O menu de mods reúne FPS, coordenadas, teclas, direção, relógio e status de corrida; cada perfil de jogador pode ativar seus próprios módulos.
 
 ## Launcher para Linux, macOS e Windows
 
@@ -15,22 +15,24 @@ O launcher usa somente perfis offline, para mundos locais e servidores que aceit
 ## O que já funciona
 
 - Três capas próprias: Goat Original, Ember e Frost, com animação nativa do Minecraft.
+- Asas cosméticas coloridas aplicadas à textura de elytra quando o jogador equipa uma.
+- Pet cabrito pixel-art que acompanha o HUD e emotes locais rápidos: GG, coração e aceno.
 - Opção Original para voltar à capa da conta, se houver, e botão para desligar os cosméticos do GoatClient.
 - Menu pelo **Shift direito**, reconfigurável em Opções → Controles → Teclas → GoatClient.
 - Botão **GOAT** no menu principal e no menu de pausa.
 - Logo fornecida pelo proprietário nos menus, no botão GOAT e no ícone do mod. O PNG original está em `src/main/resources/assets/goatclient/textures/gui/logo.png`, com transparência e proporções preservadas.
 - Tela **Contas** com perfil offline por nick.
 - Guarda-roupa com prévias das capas. Em janelas maiores, também há uma prévia 3D giratória da skin da conta.
-- HUD com FPS, coordenadas e teclas de movimento, habilitados separadamente. As teclas exibidas acompanham seus controles personalizados.
+- Menu de mods com FPS, coordenadas, teclas de movimento, direção, relógio e status de corrida, habilitados separadamente. As teclas exibidas acompanham seus controles personalizados.
 - Salvamento por UUID em `config/goatclient.json`, com recuperação de JSON danificado e preservação de uma cópia `.broken-*`.
 
-Os cosméticos desta versão aparecem **somente no seu dispositivo**. A skin, o nome e o UUID vêm da sessão ativa; você não precisa inserir senha no mod. As preferências não são sincronizadas entre máquinas. A prévia 3D mostra a skin; as capas são pré-visualizadas nos cartões do guarda-roupa.
+Os cosméticos desta versão aparecem **somente no seu dispositivo**. As asas aparecem ao equipar uma elytra; o pet e os emotes são elementos locais do HUD e não são enviados a outros jogadores. A skin, o nome e o UUID vêm da sessão ativa; você não precisa inserir senha no mod. As preferências não são sincronizadas entre máquinas. A prévia 3D mostra a skin; as capas são pré-visualizadas nos cartões do guarda-roupa.
 
 ## Instalar para jogar
 
 1. Instale o Minecraft Java 26.3 e o [Fabric Loader](https://fabricmc.net/use/installer/) 0.19.5 ou superior em seu launcher.
 2. Baixe o [Fabric API](https://modrinth.com/mod/fabric-api/versions?g=26.3) **0.163.0+26.3** ou superior compatível com 26.3.
-3. Coloque o Fabric API e `goatclient-0.2.1.jar` em `mods/` da instalação escolhida. Substitua o JAR antigo do GoatClient; mantenha apenas uma versão instalada. Não use o arquivo `-sources.jar` para jogar.
+3. Coloque o Fabric API e `goatclient-0.2.2.jar` em `mods/` da instalação escolhida. Substitua o JAR antigo do GoatClient; mantenha apenas uma versão instalada. Não use o arquivo `-sources.jar` para jogar.
 4. Inicie o perfil Fabric. Abra **GOAT**, equipe uma capa e entre em um mundo. Use **F5** para vê-la.
 
 A opção Capa em Opções → Personalização da skin deve estar ligada. O Minecraft oculta a capa ao usar elytra e durante a invisibilidade, conforme o comportamento nativo.
@@ -49,7 +51,7 @@ Instale um **JDK 25** e deixe `java` disponível no terminal ou configure `JAVA_
 ./gradlew build
 ```
 
-O mod é gerado em `build/libs/goatclient-0.2.1.jar`. No Windows, use `gradlew.bat build`.
+O mod é gerado em `build/libs/goatclient-0.2.2.jar`. No Windows, use `gradlew.bat build`.
 
 Para abrir uma instalação isolada de desenvolvimento:
 
@@ -65,7 +67,7 @@ Para executar os testes de persistência, identidade offline e autenticação Mi
 ./gradlew test
 ```
 
-Há também um teste gráfico opcional que abre o Minecraft, navega pelo guarda-roupa, HUD e contas, verifica a interface compacta, troca para offline, restaura o launcher, cria um mundo e valida a identidade offline e a aplicação de todas as capas no jogador:
+Há também um teste gráfico opcional que abre o Minecraft, navega pelo guarda-roupa, menu de mods e contas, verifica a interface compacta, testa pet/emotes/asa, troca para offline, restaura o launcher, cria um mundo e valida a identidade offline e a aplicação das capas no jogador:
 
 ```sh
 ./gradlew runClientGameTest --args='--width 1440 --height 900'
@@ -79,10 +81,10 @@ Versões fixadas: Minecraft 26.3, Fabric Loader 0.19.5, Fabric API 0.163.0+26.3,
 
 ## Organização
 
-`src/main/java` contém o catálogo de capas e a persistência. `src/client/java` contém os menus, o perfil offline, o HUD, as texturas e a integração de renderização. `src/test/java` testa identidade offline e persistência. `src/gametest` contém o teste gráfico de integração. `launcher/` contém o aplicativo desktop, instalador do jogo, catálogo de releases, empacotamento nativo e seus testes.
+`src/main/java` contém o catálogo de cosméticos e a persistência. `src/client/java` contém os menus, o perfil offline, o HUD, as texturas e a integração de renderização. `src/test/java` testa identidade offline e persistência. `src/gametest` contém o teste gráfico de integração. `launcher/` contém o aplicativo desktop, instalador do jogo, catálogo de releases, empacotamento nativo e seus testes.
 
 ## Próxima etapa do produto
 
-Este MVP cobre o guarda-roupa local, a identificação pelo perfil autenticado e um launcher com catálogo extensível. Para a experiência social de um client como Lunar/Badlion, ainda será necessário implementar um serviço de sincronização de cosméticos por UUID, renderização dos cosméticos de outros usuários e novos modelos (asas, chapéus etc.). Para distribuição pública, faltam hospedar um catálogo confiável, configurar o aplicativo Microsoft e assinar os executáveis.
+Os cosméticos desta versão são locais. Para que outros jogadores também vejam asas, pets ou emotes, ainda seria necessário um serviço de sincronização por UUID e renderização para outros jogadores. O pet e os emotes atuais são efeitos de HUD, não entidades/ações transmitidas ao servidor. Para distribuição pública, faltam hospedar um catálogo confiável, configurar o aplicativo Microsoft e assinar os executáveis.
 
 Produto independente; não é um produto oficial da Mojang ou Microsoft e não é afiliado ao Lunar Client ou Badlion.

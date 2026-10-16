@@ -4,6 +4,7 @@ import dev.goatclient.GoatClient;
 import dev.goatclient.auth.AccountManager;
 import dev.goatclient.config.ProfileSettings;
 import dev.goatclient.cosmetic.CapeStyle;
+import dev.goatclient.hud.EmoteOverlay;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -57,7 +58,7 @@ public final class GoatScreen extends Screen {
         addRenderableWidget(new GoatButton(left + 10, top + 64, sidebar - 20, 24,
                 "Cosméticos", button -> switchTab(false), () -> !hudTab));
         addRenderableWidget(new GoatButton(left + 10, top + 94, sidebar - 20, 24,
-                "HUD", button -> switchTab(true), () -> hudTab));
+                "Mods", button -> switchTab(true), () -> hudTab));
         var accounts = new GoatButton(left + 10, top + 124, sidebar - 20, 24,
                 "Contas", button -> minecraft.gui.setScreen(new AccountScreen(this)), () -> false);
         accounts.active = AccountManager.canSwitch(minecraft);
@@ -80,11 +81,11 @@ public final class GoatScreen extends Screen {
     private void initWardrobe() {
         ProfileSettings profile = GoatClient.profile();
         int cardWidth = (contentWidth - 8) / 2;
-        int cardHeight = (panelHeight - 148) / 2;
+        int cardHeight = 48;
         int index = 0;
         for (CapeStyle cape : CapeStyle.values()) {
             int x = contentX + (index % 2) * (cardWidth + 8);
-            int y = top + 82 + (index / 2) * (cardHeight + 8);
+            int y = top + 82 + (index / 2) * (cardHeight + 6);
             var card = new GoatButton(x, y, cardWidth, cardHeight, cape.title(), button -> {
                 profile.cape = cape.id();
                 GoatClient.save();
@@ -95,18 +96,43 @@ public final class GoatScreen extends Screen {
             addRenderableWidget(card);
             index++;
         }
-        toggle(contentX, top + panelHeight - 54, contentWidth, "Cosméticos",
+        toggle(contentX, top + 194, contentWidth, "Cosméticos",
                 () -> profile.cosmeticsEnabled, () -> profile.cosmeticsEnabled = !profile.cosmeticsEnabled);
+        toggle(contentX, top + 222, contentWidth, "Asas (visíveis usando elytra)",
+                () -> profile.wingsEnabled, () -> profile.wingsEnabled = !profile.wingsEnabled);
+        toggle(contentX, top + 250, contentWidth, "Pet cabrito no HUD",
+                () -> profile.petEnabled, () -> profile.petEnabled = !profile.petEnabled);
+        int emoteWidth = (contentWidth - 16) / 3;
+        emote(contentX, top + 292, emoteWidth, "GG", "GG!");
+        emote(contentX + emoteWidth + 8, top + 292, emoteWidth, "Coração", "<3");
+        emote(contentX + (emoteWidth + 8) * 2, top + 292, emoteWidth, "Aceno", "o/");
     }
 
     private void initHud() {
         ProfileSettings profile = GoatClient.profile();
-        toggle(contentX, top + 85, contentWidth, "Contador de FPS", () -> profile.showFps,
+        int gap = 8;
+        int columnWidth = (contentWidth - gap) / 2;
+        module(contentX, top + 85, columnWidth, "FPS", () -> profile.showFps,
                 () -> profile.showFps = !profile.showFps);
-        toggle(contentX, top + 117, contentWidth, "Coordenadas XYZ", () -> profile.showCoordinates,
+        module(contentX + columnWidth + gap, top + 85, columnWidth, "Coordenadas XYZ", () -> profile.showCoordinates,
                 () -> profile.showCoordinates = !profile.showCoordinates);
-        toggle(contentX, top + 149, contentWidth, "Teclas de movimento", () -> profile.showKeystrokes,
+        module(contentX, top + 117, columnWidth, "Teclas de movimento", () -> profile.showKeystrokes,
                 () -> profile.showKeystrokes = !profile.showKeystrokes);
+        module(contentX + columnWidth + gap, top + 117, columnWidth, "Direção", () -> profile.showDirection,
+                () -> profile.showDirection = !profile.showDirection);
+        module(contentX, top + 149, columnWidth, "Relógio", () -> profile.showClock,
+                () -> profile.showClock = !profile.showClock);
+        module(contentX + columnWidth + gap, top + 149, columnWidth, "Status de corrida", () -> profile.showSprintStatus,
+                () -> profile.showSprintStatus = !profile.showSprintStatus);
+    }
+
+    private void module(int x, int y, int width, String name, BooleanSupplier enabled, Runnable action) {
+        toggle(x, y, width, name, enabled, action);
+    }
+
+    private void emote(int x, int y, int width, String label, String message) {
+        addRenderableWidget(new GoatButton(x, y, width, 24, label,
+                button -> EmoteOverlay.show(message), () -> false));
     }
 
     private void toggle(int x, int y, int width, String name, BooleanSupplier value, Runnable action) {
@@ -146,13 +172,13 @@ public final class GoatScreen extends Screen {
         graphics.text(font, font.plainSubstrByWidth(name, sidebar - 24), left + 12, top + 179, TEXT, false);
         if (panelHeight >= 270) graphics.text(font, minecraft.getUser().getProfileId().toString().substring(0, 8),
                 left + 12, top + 194, MUTED, false);
-        graphics.text(font, hudTab ? "Seu jogo, seu HUD" : "Guarda-roupa", contentX, top + 64, TEXT, false);
+        graphics.text(font, hudTab ? "Mods do HUD" : "Guarda-roupa e emotes", contentX, top + 64, TEXT, false);
         if (previewX != 0) {
             graphics.fill(previewX, top + 82, previewX + 120, top + panelHeight - 46, 0xFF0D151D);
             graphics.centeredText(font, "Sua skin", previewX + 60, top + 65, MUTED);
             graphics.centeredText(font, "Arraste para girar", previewX + 60, top + panelHeight - 55, MUTED);
         }
-        String footer = hudTab ? "Atalho: Shift direito" : "Capas locais • F5 para ver";
+        String footer = hudTab ? "Módulos locais • configurações por jogador" : "Cosméticos locais • asas aparecem com elytra";
         graphics.text(font, font.plainSubstrByWidth(footer, panelWidth - 100),
                 left + 12, top + panelHeight - 22, MUTED, false);
         super.extractRenderState(graphics, mouseX, mouseY, delta);

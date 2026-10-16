@@ -47,11 +47,21 @@ public final class GoatClientGameTest implements FabricClientGameTest {
         context.runOnClient(client -> require(GoatClient.profile().capeStyle() == CapeStyle.EMBER,
                 "Wardrobe selection did not update the profile"));
         context.takeScreenshot("goatclient-wardrobe");
-        context.clickScreenButton("HUD");
+        context.clickScreenButton("Mods");
         context.clickScreenButton("Coordenadas XYZ: OFF");
         context.runOnClient(client -> require(GoatClient.profile().showCoordinates,
                 "HUD toggle did not update the profile"));
         context.takeScreenshot("goatclient-hud-settings");
+        context.clickScreenButton("Direção: OFF");
+        context.runOnClient(client -> require(GoatClient.profile().showDirection,
+                "Direction module did not update the profile"));
+        context.clickScreenButton("Cosméticos");
+        context.clickScreenButton("Pet cabrito no HUD: OFF");
+        context.runOnClient(client -> require(GoatClient.profile().petEnabled,
+                "Pet toggle did not update the profile"));
+        context.clickScreenButton("GG");
+        context.runOnClient(client -> require("GG!".equals(dev.goatclient.hud.EmoteOverlay.current()),
+                "Local emote did not appear"));
 
         // Exercise the smallest supported GUI size and ensure controls stay on-screen.
         context.runOnClient(client -> {
@@ -135,6 +145,13 @@ public final class GoatClientGameTest implements FabricClientGameTest {
                                 "Local player mixin did not apply " + style.id());
                     }
                 }
+                profile.wingsEnabled = true;
+                profile.cape = CapeStyle.GOAT.id();
+                var wingedSkin = client.player.getSkin();
+                require(wingedSkin.elytra() != null
+                                && wingedSkin.elytra().texturePath().equals(GoatClient.id("wings/goat")),
+                        "Enabled wings texture was not applied to the player skin");
+                profile.wingsEnabled = false;
                 profile.cape = CapeStyle.GOAT.id();
                 profile.showFps = true;
                 profile.showKeystrokes = true;
