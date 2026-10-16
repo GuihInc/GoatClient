@@ -8,15 +8,15 @@ O foco dos dois modos é personalização, informações na tela e conveniência
 
 O módulo `launcher/` instala o jogo e suas dependências, permite escolher versões e aceita novos releases por catálogo local ou HTTPS, sem recompilar o executável. Usa sua logo, oferece perfil offline e ajuste de memória/Java.
 
-Os pacotes Linux x64, Windows x64, macOS Intel e macOS Apple Silicon da versão **1.0.1** ficarão em [Releases](https://github.com/GuihInc/GoatClient/releases); o repositório é privado e exige acesso à conta GuihInc.
+Os pacotes Linux x64, Windows x64, macOS Intel e macOS Apple Silicon da versão **1.0.4** são publicados em [Releases](https://github.com/GuihInc/GoatClient/releases); o repositório é privado e exige acesso à conta GuihInc.
 
 O launcher usa somente perfis offline, para mundos locais e servidores que aceitam esse tipo de sessão. [Instruções do launcher e publicação de novas versões](launcher/README.md).
 
 ## O que já funciona
 
-- Três capas próprias: Goat Original, Ember e Frost, com animação nativa do Minecraft.
-- Asas cosméticas coloridas aplicadas à textura de elytra quando o jogador equipa uma.
-- Pet cabrito pixel-art que acompanha o HUD e emotes locais rápidos: GG, coração e aceno.
+- Dez capas próprias selecionáveis, cada uma com padrão e paleta próprios: Goat Original, Ember, Frost, Aurora, Void, Ocean, Sunset, Rose, Mint e Cherry.
+- Asas cosméticas com paleta combinando com a capa escolhida, aplicadas à textura de elytra quando o jogador equipa uma.
+- Cinco pets pixel-art selecionáveis no HUD (cabrito, raposa, abelha, slime e fantasminha) e oito emotes locais rápidos.
 - Opção Original para voltar à capa da conta, se houver, e botão para desligar os cosméticos do GoatClient.
 - Menu pelo **Shift direito**, reconfigurável em Opções → Controles → Teclas → GoatClient.
 - Botão **GOAT** no menu principal e no menu de pausa.
@@ -32,7 +32,7 @@ Os cosméticos desta versão aparecem **somente no seu dispositivo**. As asas ap
 
 1. Instale o Minecraft Java 26.3 e o [Fabric Loader](https://fabricmc.net/use/installer/) 0.19.5 ou superior em seu launcher.
 2. Baixe o [Fabric API](https://modrinth.com/mod/fabric-api/versions?g=26.3) **0.163.0+26.3** ou superior compatível com 26.3.
-3. Coloque o Fabric API e `goatclient-0.2.2.jar` em `mods/` da instalação escolhida. Substitua o JAR antigo do GoatClient; mantenha apenas uma versão instalada. Não use o arquivo `-sources.jar` para jogar.
+3. Coloque o Fabric API e `goatclient-0.2.3.jar` em `mods/` da instalação escolhida. Substitua o JAR antigo do GoatClient; mantenha apenas uma versão instalada. Não use o arquivo `-sources.jar` para jogar.
 4. Inicie o perfil Fabric. Abra **GOAT**, equipe uma capa e entre em um mundo. Use **F5** para vê-la.
 
 A opção Capa em Opções → Personalização da skin deve estar ligada. O Minecraft oculta a capa ao usar elytra e durante a invisibilidade, conforme o comportamento nativo.
@@ -51,7 +51,7 @@ Instale um **JDK 25** e deixe `java` disponível no terminal ou configure `JAVA_
 ./gradlew build
 ```
 
-O mod é gerado em `build/libs/goatclient-0.2.2.jar`. No Windows, use `gradlew.bat build`.
+O mod é gerado em `build/libs/goatclient-0.2.3.jar`. No Windows, use `gradlew.bat build`.
 
 Para abrir uma instalação isolada de desenvolvimento:
 

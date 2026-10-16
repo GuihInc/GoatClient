@@ -4,6 +4,7 @@ import dev.goatclient.GoatClient;
 import dev.goatclient.auth.AccountManager;
 import dev.goatclient.config.ProfileSettings;
 import dev.goatclient.cosmetic.CapeStyle;
+import dev.goatclient.cosmetic.PetStyle;
 import dev.goatclient.hud.EmoteOverlay;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -22,6 +23,7 @@ public final class GoatScreen extends Screen {
     private final Supplier<PlayerSkin> skinLookup;
     private boolean hudTab;
     private boolean emoteTab;
+    private int capePage;
     private int left;
     private int top;
     private int panelWidth;
@@ -94,12 +96,26 @@ public final class GoatScreen extends Screen {
         int cardWidth = (contentWidth - 8) / 2;
         boolean compact = panelHeight < 300;
         int cardHeight = compact ? 30 : 48;
-        int cardTop = compact ? 74 : 82;
+        int cardTop = compact ? 70 : 78;
         int rowGap = compact ? 4 : 6;
-        int index = 0;
-        for (CapeStyle cape : CapeStyle.values()) {
+        CapeStyle[] capes = CapeStyle.values();
+        int pageSize = 4;
+        int pageCount = (capes.length + pageSize - 1) / pageSize;
+        capePage = Math.floorMod(capePage, pageCount);
+        var previous = new GoatButton(contentX, top + (compact ? 138 : 184), 34, 20,
+                "‹", button -> { capePage = Math.floorMod(capePage - 1, pageCount); rebuildWidgets(); }, () -> false);
+        var next = new GoatButton(contentX + contentWidth - 34, top + (compact ? 138 : 184), 34, 20,
+                "›", button -> { capePage = (capePage + 1) % pageCount; rebuildWidgets(); }, () -> false);
+        previous.setTooltip(Tooltip.create(Component.literal("Capas anteriores")));
+        next.setTooltip(Tooltip.create(Component.literal("Mais capas")));
+        addRenderableWidget(previous);
+        addRenderableWidget(next);
+        for (int pageIndex = 0; pageIndex < pageSize; pageIndex++) {
+            int index = capePage * pageSize + pageIndex;
+            if (index >= capes.length) break;
+            CapeStyle cape = capes[index];
             int x = contentX + (index % 2) * (cardWidth + 8);
-            int y = top + cardTop + (index / 2) * (cardHeight + rowGap);
+            int y = top + cardTop + (pageIndex / 2) * (cardHeight + rowGap);
             var card = new GoatButton(x, y, cardWidth, cardHeight, cape.title(), button -> {
                 profile.cape = cape.id();
                 GoatClient.save();
@@ -108,23 +124,37 @@ public final class GoatScreen extends Screen {
                     ? "Usar a capa original da sua conta, se houver."
                     : "Equipar " + cape.title() + " neste dispositivo. Use F5 para ver no jogo.")));
             addRenderableWidget(card);
-            index++;
         }
-        int toggleTop = compact ? 144 : 194;
-        int toggleGap = compact ? 25 : 28;
+        int toggleTop = compact ? 164 : 214;
+        int toggleGap = compact ? 24 : 28;
         toggle(contentX, top + toggleTop, contentWidth, "Cosméticos",
                 () -> profile.cosmeticsEnabled, () -> profile.cosmeticsEnabled = !profile.cosmeticsEnabled);
         toggle(contentX, top + toggleTop + toggleGap, contentWidth, "Asas (visíveis usando elytra)",
                 () -> profile.wingsEnabled, () -> profile.wingsEnabled = !profile.wingsEnabled);
         toggle(contentX, top + toggleTop + toggleGap * 2, contentWidth, "Pet cabrito no HUD",
                 () -> profile.petEnabled, () -> profile.petEnabled = !profile.petEnabled);
+        PetStyle pet = profile.petStyle();
+        var petButton = new GoatButton(contentX, top + toggleTop + toggleGap * 3, contentWidth, 20,
+                "Pet: " + pet.title(), button -> {
+                    PetStyle[] pets = PetStyle.values();
+                    profile.pet = pets[(profile.petStyle().ordinal() + 1) % pets.length].id();
+                    GoatClient.save();
+                    button.setMessage(Component.literal("Pet: " + profile.petStyle().title()));
+                }, () -> false);
+        petButton.setTooltip(Tooltip.create(Component.literal("Alternar o companheiro exibido no HUD.")));
+        addRenderableWidget(petButton);
     }
 
     private void initEmotes() {
-        int emoteWidth = (contentWidth - 16) / 3;
-        emote(contentX, top + 94, emoteWidth, "GG", "GG!");
-        emote(contentX + emoteWidth + 8, top + 94, emoteWidth, "Coração", "<3");
-        emote(contentX + (emoteWidth + 8) * 2, top + 94, emoteWidth, "Aceno", "o/");
+        String[][] emotes = {{"GG", "GG!"}, {"Boa", "WP!"}, {"Coração", "<3"}, {"Aceno", "o/"},
+                {"Risada", "Haha!"}, {"Palmas", "*clap*"}, {"Surpreso", "Wow!"}, {"Nice", "Nice!"}};
+        int gap = 6;
+        int emoteWidth = (contentWidth - gap * 3) / 4;
+        for (int index = 0; index < emotes.length; index++) {
+            int x = contentX + (index % 4) * (emoteWidth + gap);
+            int y = top + 94 + (index / 4) * 32;
+            emote(x, y, emoteWidth, emotes[index][0], emotes[index][1]);
+        }
     }
 
     private void initHud() {
@@ -194,6 +224,11 @@ public final class GoatScreen extends Screen {
         }
         String pageTitle = hudTab ? "Mods do HUD" : emoteTab ? "Emotes rápidos" : "Guarda-roupa";
         graphics.text(font, pageTitle, contentX, top + 64, TEXT, false);
+        if (!hudTab && !emoteTab) {
+            int pages = (CapeStyle.values().length + 3) / 4;
+            graphics.centeredText(font, "Capas " + (capePage + 1) + "/" + pages,
+                    contentX + contentWidth / 2, top + (panelHeight < 300 ? 144 : 190), MUTED);
+        }
         if (previewX != 0) {
             graphics.fill(previewX, top + 82, previewX + 120, top + panelHeight - 46, 0xFF0D151D);
             graphics.centeredText(font, "Sua skin", previewX + 60, top + 65, MUTED);

@@ -1,6 +1,7 @@
 package dev.goatclient.config;
 
 import dev.goatclient.cosmetic.CapeStyle;
+import dev.goatclient.cosmetic.PetStyle;
 
 public final class ProfileSettings {
     public String cape = CapeStyle.GOAT.id();
@@ -13,8 +14,13 @@ public final class ProfileSettings {
     public boolean showSprintStatus = false;
     public boolean wingsEnabled = false;
     public boolean petEnabled = false;
+    public String pet = PetStyle.GOAT.id();
 
     public CapeStyle capeStyle() {
         return CapeStyle.byId(cape);
+    }
+
+    public PetStyle petStyle() {
+        return PetStyle.byId(pet);
     }
 }

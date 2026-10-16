@@ -3,6 +3,7 @@ package dev.goatclient.config;
 import static org.junit.jupiter.api.Assertions.*;
 
 import dev.goatclient.cosmetic.CapeStyle;
+import dev.goatclient.cosmetic.PetStyle;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,6 +34,7 @@ class ConfigStoreTest {
         UUID second = UUID.randomUUID();
         ConfigStore store = ConfigStore.load(file);
         store.profile(first).cape = CapeStyle.EMBER.id();
+        store.profile(first).pet = PetStyle.FOX.id();
         store.profile(first).showCoordinates = true;
         store.profile(second).cape = CapeStyle.FROST.id();
         store.profile(second).cosmeticsEnabled = false;
@@ -40,6 +42,7 @@ class ConfigStoreTest {
 
         ConfigStore loaded = ConfigStore.load(file);
         assertEquals(CapeStyle.EMBER, loaded.profile(first).capeStyle());
+        assertEquals(PetStyle.FOX, loaded.profile(first).petStyle());
         assertTrue(loaded.profile(first).showCoordinates);
         assertEquals(CapeStyle.FROST, loaded.profile(second).capeStyle());
         assertFalse(loaded.profile(second).cosmeticsEnabled);
@@ -70,6 +73,7 @@ class ConfigStoreTest {
                 """.formatted(player));
         ConfigStore loaded = ConfigStore.load(file);
         assertEquals(CapeStyle.NONE, loaded.profile(player).capeStyle());
+        assertEquals(PetStyle.GOAT, loaded.profile(player).petStyle());
         assertTrue(loaded.profile(player).showFps);
         loaded.save();
         assertFalse(Files.readString(file).contains("removed"));

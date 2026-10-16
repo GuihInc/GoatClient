@@ -2,6 +2,7 @@ package dev.goatclient.hud;
 
 import dev.goatclient.GoatClient;
 import dev.goatclient.config.ProfileSettings;
+import dev.goatclient.cosmetic.PetStyle;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -66,23 +67,24 @@ public final class GoatHud {
     }
 
     private static void pet(GuiGraphicsExtractor graphics, Minecraft client) {
+        PetStyle pet = GoatClient.profile().petStyle();
         int bob = (int) Math.round(Math.sin(System.currentTimeMillis() / 240.0) * 2);
-        int x = client.getWindow().getGuiScaledWidth() - 43;
-        int y = client.getWindow().getGuiScaledHeight() - 57 + bob;
-        int cream = 0xFFFFF4E8;
-        int shadow = 0xFFBFC8D0;
-        int dark = 0xFF17202A;
-        int horn = 0xFFD9A15D;
-        graphics.fill(x + 8, y + 12, x + 27, y + 26, 0xB912191F);
-        graphics.fill(x + 10, y + 14, x + 23, y + 23, cream);
-        graphics.fill(x + 19, y + 7, x + 31, y + 19, cream);
-        graphics.fill(x + 21, y + 3, x + 24, y + 8, horn);
-        graphics.fill(x + 27, y + 3, x + 30, y + 8, horn);
-        graphics.fill(x + 22, y + 11, x + 24, y + 13, dark);
-        graphics.fill(x + 28, y + 11, x + 30, y + 13, dark);
-        graphics.fill(x + 21, y + 23, x + 24, y + 28, shadow);
-        graphics.fill(x + 12, y + 23, x + 15, y + 28, shadow);
-        graphics.fill(x + 2, y + 29, x + 42, y + 42, 0xD912191F);
-        graphics.centeredText(client.font, "CABRITO", x + 22, y + 32, ACCENT);
+        int scale = 2;
+        int spriteWidth = pet.width() * scale;
+        int spriteHeight = pet.height() * scale;
+        int x = client.getWindow().getGuiScaledWidth() - spriteWidth - 14;
+        int y = client.getWindow().getGuiScaledHeight() - 52 - spriteHeight + bob;
+        graphics.fill(x - 5, y - 5, x + spriteWidth + 5, y + spriteHeight + 5, 0xB912191F);
+        for (int py = 0; py < pet.height(); py++) {
+            for (int px = 0; px < pet.width(); px++) {
+                int color = pet.pixel(px, py);
+                if (color != 0) graphics.fill(x + px * scale, y + py * scale,
+                        x + (px + 1) * scale, y + (py + 1) * scale, color);
+            }
+        }
+        int labelWidth = client.font.width(pet.title()) + 16;
+        int labelX = x + (spriteWidth - labelWidth) / 2;
+        graphics.fill(labelX, y + spriteHeight + 7, labelX + labelWidth, y + spriteHeight + 22, 0xD912191F);
+        graphics.centeredText(client.font, pet.title(), x + spriteWidth / 2, y + spriteHeight + 10, pet.accent());
     }
 }
