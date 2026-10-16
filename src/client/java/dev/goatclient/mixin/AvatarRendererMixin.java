@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.world.phys.Vec3;
 import com.mojang.blaze3d.vertex.PoseStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,9 +39,15 @@ public abstract class AvatarRendererMixin {
         if (client.player == null || state.id != client.player.getId() || state.isInvisible) return;
 
         state.nameTagAttachment = new Vec3(0.0, state.boundingBoxHeight + 0.5, 0.0);
-        Component name = Component.literal(GoatClient.displayNickname()).withStyle(ChatFormatting.WHITE);
-        state.nameTag = GoatClient.profile().showGoatSymbol
-                ? Component.literal("[GC] ").withStyle(ChatFormatting.GREEN).append(name)
-                : name;
+        Component name = Component.literal(GoatClient.displayNickname())
+                .withStyle(style -> style.withColor(ChatFormatting.WHITE).withFont(FontDescription.DEFAULT));
+        if (GoatClient.profile().showGoatSymbol) {
+            var logo = Component.literal("\uE000")
+                    .withStyle(style -> style.withFont(new FontDescription.Resource(GoatClient.id("default"))));
+            Component gap = Component.literal(" ").withStyle(style -> style.withFont(FontDescription.DEFAULT));
+            state.nameTag = logo.append(gap).append(name);
+        } else {
+            state.nameTag = name;
+        }
     }
 }

@@ -1,0 +1,11 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "goatclient:font/goat-glyph.png",
+      "height": 11,
+      "ascent": 9,
+      "chars": ["\uE000"]
+    }
+  ]
+}

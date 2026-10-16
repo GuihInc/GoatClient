@@ -62,7 +62,7 @@ public final class NicknameScreen extends Screen {
     }
 
     private String symbolLabel() {
-        return "Símbolo [GC]: " + (showSymbol ? "ON" : "OFF");
+        return "Logo GoatClient: " + (showSymbol ? "ON" : "OFF");
     }
 
     private void save() {
