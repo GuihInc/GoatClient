@@ -8,6 +8,7 @@ import dev.goatclient.auth.AuthSettings;
 import dev.goatclient.cosmetic.CapeTextures;
 import dev.goatclient.gui.GoatScreen;
 import dev.goatclient.gui.GoatMenuButton;
+import dev.goatclient.gui.NicknameScreen;
 import dev.goatclient.hud.GoatHud;
 import java.io.IOException;
 import net.fabricmc.api.ClientModInitializer;
@@ -44,9 +45,16 @@ public final class GoatClient implements ClientModInitializer {
         KeyMapping.Category category = KeyMapping.Category.register(id("client"));
         KeyMapping wardrobe = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.goatclient.wardrobe", InputConstants.Type.KEYBOARD, InputConstants.KEY_RSHIFT, category));
+        KeyMapping nickname = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "key.goatclient.nickname", InputConstants.Type.KEYBOARD, InputConstants.KEY_F5, category));
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (wardrobe.consumeClick()) {
                 if (client.gui.screen() == null) client.gui.setScreen(new GoatScreen(null));
+            }
+            while (nickname.consumeClick()) {
+                if (client.gui.screen() == null && client.player != null) {
+                    client.gui.setScreen(new NicknameScreen(null));
+                }
             }
         });
         ScreenEvents.AFTER_INIT.register((client, screen, width, height) -> {
@@ -66,6 +74,11 @@ public final class GoatClient implements ClientModInitializer {
 
     public static ProfileSettings profile() {
         return config.profile(Minecraft.getInstance().getUser().getProfileId());
+    }
+
+    public static String displayNickname() {
+        String nickname = profile().displayNickname;
+        return nickname == null || nickname.isBlank() ? Minecraft.getInstance().getUser().getName() : nickname;
     }
 
     public static AuthSettings authSettings() {

@@ -1,4 +1,5 @@
 {
   "key.category.goatclient.client": "GoatClient",
-  "key.goatclient.wardrobe": "Open GoatClient"
+  "key.goatclient.wardrobe": "Open GoatClient",
+  "key.goatclient.nickname": "Edit GoatClient nickname"
 }

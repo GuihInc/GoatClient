@@ -15,6 +15,8 @@ public final class ProfileSettings {
     public boolean wingsEnabled = false;
     public boolean petEnabled = false;
     public String pet = PetStyle.GOAT.id();
+    public String displayNickname = "";
+    public boolean showGoatSymbol = true;
 
     public CapeStyle capeStyle() {
         return CapeStyle.byId(cape);

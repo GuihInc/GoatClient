@@ -116,6 +116,24 @@ class LauncherTest {
         assertFalse(LaunchCommand.Account.offline("GoatTest").toString().contains("token"));
     }
 
+    @Test void sharesMinecraftOptionsBetweenVersionInstances() throws Exception {
+        Path launcher = directory.resolve("GoatClient");
+        Path first = launcher.resolve("instances/first");
+        Path second = launcher.resolve("instances/second");
+        Files.createDirectories(first);
+        Files.writeString(first.resolve("options.txt"), "gamma:0.5\nkey_key.forward:key.keyboard.w");
+
+        SharedMinecraftOptions.load(launcher, first);
+        assertEquals(Files.readString(first.resolve("options.txt")), Files.readString(launcher.resolve("options.txt")));
+
+        Files.createDirectories(second);
+        SharedMinecraftOptions.load(launcher, second);
+        assertEquals(Files.readString(launcher.resolve("options.txt")), Files.readString(second.resolve("options.txt")));
+        Files.writeString(second.resolve("options.txt"), "gamma:1.0\nkey_key.forward:key.keyboard.up");
+        SharedMinecraftOptions.save(launcher, second);
+        assertEquals(Files.readString(second.resolve("options.txt")), Files.readString(launcher.resolve("options.txt")));
+    }
+
     private static String catalog(String url, String sha) {
         return """
                 {"schemaVersion":1,"releases":[{"id":"goat-next","name":"GoatClient Next", "minecraft":"26.4",

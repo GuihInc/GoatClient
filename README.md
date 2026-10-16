@@ -8,7 +8,7 @@ O foco dos dois modos é personalização, informações na tela e conveniência
 
 O módulo `launcher/` instala o jogo e suas dependências, permite escolher versões e aceita novos releases por catálogo local ou HTTPS, sem recompilar o executável. Usa sua logo, oferece perfil offline e ajuste de memória/Java.
 
-Os pacotes Linux x64, Windows x64, macOS Intel e macOS Apple Silicon da versão **1.0.5** são publicados em [Releases](https://github.com/GuihInc/GoatClient/releases); o repositório é privado e exige acesso à conta GuihInc.
+Os pacotes Linux x64, Windows x64, macOS Intel e macOS Apple Silicon da versão **1.0.6** são publicados em [Releases](https://github.com/GuihInc/GoatClient/releases); o repositório é privado e exige acesso à conta GuihInc.
 
 O launcher usa somente perfis offline, para mundos locais e servidores que aceitam esse tipo de sessão. [Instruções do launcher e publicação de novas versões](launcher/README.md).
 
@@ -19,12 +19,14 @@ O launcher usa somente perfis offline, para mundos locais e servidores que aceit
 - Cinco pets 3D low-poly selecionáveis, presos ao ombro do jogador local (cabrito, raposa, abelha, slime e fantasminha), além de oito emotes locais rápidos.
 - Opção Original para voltar à capa da conta, se houver, e botão para desligar os cosméticos do GoatClient.
 - Menu pelo **Shift direito**, reconfigurável em Opções → Controles → Teclas → GoatClient.
+- Editor de nick pelo **F5**, com marcador `[GC]` opcional no nome exibido sobre seu personagem em terceira pessoa; é visual/local e não altera seu nick no servidor. F5 também continua trocando a perspectiva.
 - Botão **GOAT** no menu principal e no menu de pausa.
 - Logo fornecida pelo proprietário nos menus, no botão GOAT e no ícone do mod. O PNG original está em `src/main/resources/assets/goatclient/textures/gui/logo.png`, com transparência e proporções preservadas.
 - Tela **Contas** com perfil offline por nick.
 - Guarda-roupa com prévias das capas. Em janelas maiores, também há uma prévia 3D giratória da skin da conta.
 - Menu de mods com FPS, coordenadas, teclas de movimento, direção, relógio e status de corrida, habilitados separadamente. As teclas exibidas acompanham seus controles personalizados.
 - Salvamento por UUID em `config/goatclient.json`, com recuperação de JSON danificado e preservação de uma cópia `.broken-*`.
+- O launcher compartilha o `options.txt` (controles, vídeo, áudio e acessibilidade) entre as versões; o arquivo principal fica na pasta de dados escolhida no GoatClient.
 
 Os cosméticos desta versão aparecem **somente no seu dispositivo**. As asas aparecem ao equipar uma elytra; o pet 3D fica no ombro do jogador local e os emotes são notificações locais. Nada disso é enviado a outros jogadores. A skin, o nome e o UUID vêm da sessão ativa; você não precisa inserir senha no mod. As preferências não são sincronizadas entre máquinas. A prévia 3D do guarda-roupa mostra a skin; as capas são pré-visualizadas nos cartões.
 
@@ -32,7 +34,7 @@ Os cosméticos desta versão aparecem **somente no seu dispositivo**. As asas ap
 
 1. Instale o Minecraft Java 26.3 e o [Fabric Loader](https://fabricmc.net/use/installer/) 0.19.5 ou superior em seu launcher.
 2. Baixe o [Fabric API](https://modrinth.com/mod/fabric-api/versions?g=26.3) **0.163.0+26.3** ou superior compatível com 26.3.
-3. Coloque o Fabric API e `goatclient-0.2.4.jar` em `mods/` da instalação escolhida. Substitua o JAR antigo do GoatClient; mantenha apenas uma versão instalada. Não use o arquivo `-sources.jar` para jogar.
+3. Coloque o Fabric API e `goatclient-0.2.5.jar` em `mods/` da instalação escolhida. Substitua o JAR antigo do GoatClient; mantenha apenas uma versão instalada. Não use o arquivo `-sources.jar` para jogar.
 4. Inicie o perfil Fabric. Abra **GOAT**, equipe uma capa e entre em um mundo. Use **F5** para vê-la.
 
 A opção Capa em Opções → Personalização da skin deve estar ligada. O Minecraft oculta a capa ao usar elytra e durante a invisibilidade, conforme o comportamento nativo.
@@ -41,7 +43,7 @@ A opção Capa em Opções → Personalização da skin deve estar ligada. O Min
 
 No menu principal, abra **GOAT → Contas**, digite um nick de 3 a 16 letras, números ou `_` e clique em **Usar perfil offline**. O client usa o UUID offline padrão do Minecraft. Esse perfil funciona em mundos locais e servidores que aceitam conexões offline; servidores com autenticação online exigem uma sessão Microsoft válida. O nick não é uma identidade verificada e diferencia maiúsculas de minúsculas.
 
-O último nick offline fica em `config/goatclient.json`. As capas e o HUD são associados ao UUID do perfil local; Realms fica indisponível no modo offline.
+O último nick offline fica em `config/goatclient.json`. O apelido do editor F5 e o marcador `[GC]` afetam apenas a placa de nome renderizada no seu próprio client, não mudam a identidade offline nem o nome visto pelos outros. As capas e o HUD são associados ao UUID do perfil local; Realms fica indisponível no modo offline.
 
 ## Compilar e desenvolver
 
@@ -51,7 +53,7 @@ Instale um **JDK 25** e deixe `java` disponível no terminal ou configure `JAVA_
 ./gradlew build
 ```
 
-O mod é gerado em `build/libs/goatclient-0.2.4.jar`. No Windows, use `gradlew.bat build`.
+O mod é gerado em `build/libs/goatclient-0.2.5.jar`. No Windows, use `gradlew.bat build`.
 
 Para abrir uma instalação isolada de desenvolvimento:
 

@@ -34,6 +34,7 @@ public final class GameRunner {
                 var prepared = new MinecraftInstaller(root, Platform.current(), downloads).prepare(release, settings.javaPath, progress);
                 if (!launch) { progress.accept("Instalação pronta."); return 0; }
                 Downloader.checkInterrupted();
+                SharedMinecraftOptions.load(root, game);
                 var arguments = LaunchCommand.arguments(prepared, account, settings.memoryMb, Platform.current());
                 Path argFile = Files.createTempFile(game, ".launch-", ".args");
                 try {
@@ -59,7 +60,8 @@ public final class GameRunner {
                 } finally {
                     if (process != null && process.isAlive()) process.destroy();
                     process = null;
-                    Files.deleteIfExists(argFile);
+                    try { SharedMinecraftOptions.save(root, game); }
+                    finally { Files.deleteIfExists(argFile); }
                 }
             }
         } catch (java.nio.channels.OverlappingFileLockException exception) {

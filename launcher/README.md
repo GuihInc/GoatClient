@@ -1,6 +1,6 @@
 # GoatClient Launcher
 
-Launcher desktop independente para o GoatClient, com foco em **PvP e survival**: logo própria, seleção de versões, instalação de Minecraft/Fabric/Fabric API, download automático do Java necessário e perfil offline. Versão do launcher: **1.0.5**. A versão do client depende do catálogo selecionado; o client oferece capas e asas 3D, pets low-poly no ombro, emotes locais e um menu modular de HUD. Não inclui vantagens de combate ou perfis separados por modo de jogo.
+Launcher desktop independente para o GoatClient, com foco em **PvP e survival**: logo própria, seleção de versões, instalação de Minecraft/Fabric/Fabric API, download automático do Java necessário e perfil offline. Versão do launcher: **1.0.6**. A versão do client depende do catálogo selecionado; o client oferece capas e asas 3D, pets low-poly no ombro, emotes locais, editor visual de nick e um menu modular de HUD. Não inclui vantagens de combate ou perfis separados por modo de jogo.
 
 ## Abrir
 
@@ -49,7 +49,7 @@ O modelo é voltado a versões modernas do Minecraft com Fabric. Uma mudança fu
 - Windows: `%APPDATA%\GoatClient`.
 - macOS: `~/Library/Application Support/GoatClient`.
 
-Cada versão usa `instances/<id>/`, com `saves/`, `mods/`, configurações e `launcher.log`. Assets, bibliotecas e runtimes são compartilhados dentro da pasta de dados. O launcher substitui somente seus JARs gerenciados em `mods/goatclient.jar` e `mods/fabric-api.jar`; não apaga mundos ou outros mods. A instalação de um release novo não migra mundos antigos automaticamente. Faça backup antes de transferir mundos entre versões do Minecraft.
+Cada versão usa `instances/<id>/`, com `saves/`, `mods/`, configurações e `launcher.log`. Assets, bibliotecas, runtimes e o `options.txt` são compartilhados dentro da pasta de dados; configurações de mods e mundos continuam separados por versão. O launcher sincroniza as opções antes de abrir o jogo e as salva de volta ao fechar. O launcher substitui somente seus JARs gerenciados em `mods/goatclient.jar` e `mods/fabric-api.jar`; não apaga mundos ou outros mods. A instalação de um release novo não migra mundos antigos automaticamente. Faça backup antes de transferir mundos entre versões do Minecraft.
 
 ## Compilar os executáveis
 
@@ -61,11 +61,11 @@ Com um **JDK 25** disponível, execute no sistema de destino:
 
 No Windows: `gradlew.bat test :launcher:test :launcher:packageLauncher`.
 
-O ZIP aparece em `launcher/build/distributions/GoatClientLauncher-1.0.5-<sistema>-<arquitetura>.zip`. O aplicativo usa `jpackage` e inclui seu próprio runtime. O build converte a logo do GoatClient para os formatos `.ico` e `.icns` no Windows e macOS; no Linux, usa o PNG original. O empacotamento nativo deve rodar em cada sistema de destino, conforme a [documentação do JDK](https://docs.oracle.com/en/java/javase/25/jpackage/packaging-overview.html).
+O ZIP aparece em `launcher/build/distributions/GoatClientLauncher-1.0.6-<sistema>-<arquitetura>.zip`. O aplicativo usa `jpackage` e inclui seu próprio runtime. O build converte a logo do GoatClient para os formatos `.ico` e `.icns` no Windows e macOS; no Linux, usa o PNG original. O empacotamento nativo deve rodar em cada sistema de destino, conforme a [documentação do JDK](https://docs.oracle.com/en/java/javase/25/jpackage/packaging-overview.html).
 
 O workflow `.github/workflows/launcher.yml` gera pacotes para Linux x64, Windows x64, macOS ARM64 e macOS Intel. No repositório, execute **Build GoatClient Launcher** em Actions para gerar artefatos temporários, ou envie uma tag `launcher-v*` para criar um GitHub Release com os quatro ZIPs anexados. Os ambientes vêm das [imagens oficiais do GitHub Actions](https://github.com/actions/runner-images).
 
-O release 1.0.5 e seus pacotes estarão em [Releases](https://github.com/GuihInc/GoatClient/releases). Entre na conta com acesso ao repositório privado para baixar o ZIP da sua plataforma.
+O release 1.0.6 e seus pacotes estarão em [Releases](https://github.com/GuihInc/GoatClient/releases). Entre na conta com acesso ao repositório privado para baixar o ZIP da sua plataforma.
 
 Para executar o launcher a partir do código:
 

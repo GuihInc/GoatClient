@@ -37,14 +37,20 @@ public final class ConfigStore {
         try {
             state = GSON.fromJson(json, State.class);
             if (state == null) throw new JsonParseException("Empty configuration");
-            if (state.schemaVersion != 1) {
+            if (state.schemaVersion != 1 && state.schemaVersion != 2) {
                 // Preserve newer configurations rather than rewriting their unknown fields.
                 throw new IOException("Unsupported GoatClient config schema: " + state.schemaVersion);
             }
+            boolean migrateNicknameSettings = state.schemaVersion == 1;
             if (state.profiles == null) state.profiles = new HashMap<>();
             if (state.auth == null) state.auth = new AuthSettings();
             state.profiles.entrySet().removeIf(entry -> entry.getValue() == null);
-            state.profiles.values().forEach(profile -> profile.cape = profile.capeStyle().id());
+            state.profiles.values().forEach(profile -> {
+                profile.cape = profile.capeStyle().id();
+                if (profile.displayNickname == null) profile.displayNickname = "";
+                if (migrateNicknameSettings) profile.showGoatSymbol = true;
+            });
+            state.schemaVersion = 2;
         } catch (JsonParseException | IllegalStateException exception) {
             Path backup = absolute.resolveSibling(absolute.getFileName() + ".broken-" + UUID.randomUUID());
             Files.move(absolute, backup);
@@ -82,7 +88,7 @@ public final class ConfigStore {
     }
 
     private static final class State {
-        int schemaVersion = 1;
+        int schemaVersion = 2;
         Map<String, ProfileSettings> profiles = new HashMap<>();
         AuthSettings auth = new AuthSettings();
     }

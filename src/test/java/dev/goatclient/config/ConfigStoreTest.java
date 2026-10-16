@@ -75,6 +75,7 @@ class ConfigStoreTest {
         assertEquals(CapeStyle.NONE, loaded.profile(player).capeStyle());
         assertEquals(PetStyle.GOAT, loaded.profile(player).petStyle());
         assertTrue(loaded.profile(player).showFps);
+        assertTrue(loaded.profile(player).showGoatSymbol);
         loaded.save();
         assertFalse(Files.readString(file).contains("removed"));
     }
@@ -82,10 +83,24 @@ class ConfigStoreTest {
     @Test
     void preservesNewerSchemaWithoutRewritingIt() throws IOException {
         Path file = directory.resolve("goatclient.json");
-        String newer = "{\"schemaVersion\":2,\"profiles\":{}}";
+        String newer = "{\"schemaVersion\":3,\"profiles\":{}}";
         Files.writeString(file, newer);
         assertThrows(IOException.class, () -> ConfigStore.load(file));
         assertEquals(newer, Files.readString(file));
+    }
+
+    @Test
+    void migratesExistingPreferencesToNicknameSettings() throws IOException {
+        UUID player = UUID.randomUUID();
+        Path file = directory.resolve("goatclient.json");
+        Files.writeString(file, "{\"schemaVersion\":1,\"profiles\":{\"%s\":{\"cape\":\"goat\"}}}"
+                .formatted(player));
+
+        ConfigStore loaded = ConfigStore.load(file);
+        assertEquals("", loaded.profile(player).displayNickname);
+        assertTrue(loaded.profile(player).showGoatSymbol);
+        loaded.save();
+        assertTrue(Files.readString(file).contains("\"schemaVersion\": 2"));
     }
 
     @Test
