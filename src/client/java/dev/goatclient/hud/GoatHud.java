@@ -2,7 +2,6 @@ package dev.goatclient.hud;
 
 import dev.goatclient.GoatClient;
 import dev.goatclient.config.ProfileSettings;
-import dev.goatclient.cosmetic.PetStyle;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -39,7 +38,6 @@ public final class GoatHud {
             key(graphics, client.options.keyRight, 52, y + 22, 20);
             key(graphics, client.options.keyJump, 8, y + 44, 64);
         }
-        if (profile.cosmeticsEnabled && profile.petEnabled) pet(graphics, client);
         String emote = EmoteOverlay.current();
         if (!emote.isEmpty()) {
             int center = client.getWindow().getGuiScaledWidth() / 2;
@@ -66,25 +64,4 @@ public final class GoatHud {
         graphics.centeredText(font, label, x + width / 2, y + 6, mapping.isDown() ? 0xFF122119 : 0xFFF0F4F8);
     }
 
-    private static void pet(GuiGraphicsExtractor graphics, Minecraft client) {
-        PetStyle pet = GoatClient.profile().petStyle();
-        int bob = (int) Math.round(Math.sin(System.currentTimeMillis() / 240.0) * 2);
-        int scale = 2;
-        int spriteWidth = pet.width() * scale;
-        int spriteHeight = pet.height() * scale;
-        int x = client.getWindow().getGuiScaledWidth() - spriteWidth - 14;
-        int y = client.getWindow().getGuiScaledHeight() - 52 - spriteHeight + bob;
-        graphics.fill(x - 5, y - 5, x + spriteWidth + 5, y + spriteHeight + 5, 0xB912191F);
-        for (int py = 0; py < pet.height(); py++) {
-            for (int px = 0; px < pet.width(); px++) {
-                int color = pet.pixel(px, py);
-                if (color != 0) graphics.fill(x + px * scale, y + py * scale,
-                        x + (px + 1) * scale, y + (py + 1) * scale, color);
-            }
-        }
-        int labelWidth = client.font.width(pet.title()) + 16;
-        int labelX = x + (spriteWidth - labelWidth) / 2;
-        graphics.fill(labelX, y + spriteHeight + 7, labelX + labelWidth, y + spriteHeight + 22, 0xD912191F);
-        graphics.centeredText(client.font, pet.title(), x + spriteWidth / 2, y + spriteHeight + 10, pet.accent());
-    }
 }

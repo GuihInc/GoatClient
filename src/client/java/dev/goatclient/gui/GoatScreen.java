@@ -131,7 +131,7 @@ public final class GoatScreen extends Screen {
                 () -> profile.cosmeticsEnabled, () -> profile.cosmeticsEnabled = !profile.cosmeticsEnabled);
         toggle(contentX, top + toggleTop + toggleGap, contentWidth, "Asas (visíveis usando elytra)",
                 () -> profile.wingsEnabled, () -> profile.wingsEnabled = !profile.wingsEnabled);
-        toggle(contentX, top + toggleTop + toggleGap * 2, contentWidth, "Pet cabrito no HUD",
+        toggle(contentX, top + toggleTop + toggleGap * 2, contentWidth, "Pet 3D no ombro",
                 () -> profile.petEnabled, () -> profile.petEnabled = !profile.petEnabled);
         PetStyle pet = profile.petStyle();
         var petButton = new GoatButton(contentX, top + toggleTop + toggleGap * 3, contentWidth, 20,
@@ -141,7 +141,7 @@ public final class GoatScreen extends Screen {
                     GoatClient.save();
                     button.setMessage(Component.literal("Pet: " + profile.petStyle().title()));
                 }, () -> false);
-        petButton.setTooltip(Tooltip.create(Component.literal("Alternar o companheiro exibido no HUD.")));
+        petButton.setTooltip(Tooltip.create(Component.literal("Escolher o companheiro 3D preso ao ombro.")));
         addRenderableWidget(petButton);
     }
 

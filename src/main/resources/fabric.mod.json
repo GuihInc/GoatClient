@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "GoatClient",
   "icon": "assets/goatclient/textures/gui/logo.png",
-  "description": "Client para Minecraft 26.3: menu de mods/HUD, capas, asas, pet e emotes locais.",
+  "description": "Client para Minecraft 26.3: menu de mods/HUD, capas 3D, asas e pets 3D locais no ombro.",
   "authors": ["GoatClient"],
   "environment": "client",
   "entrypoints": {

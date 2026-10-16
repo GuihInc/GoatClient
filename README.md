@@ -8,15 +8,15 @@ O foco dos dois modos é personalização, informações na tela e conveniência
 
 O módulo `launcher/` instala o jogo e suas dependências, permite escolher versões e aceita novos releases por catálogo local ou HTTPS, sem recompilar o executável. Usa sua logo, oferece perfil offline e ajuste de memória/Java.
 
-Os pacotes Linux x64, Windows x64, macOS Intel e macOS Apple Silicon da versão **1.0.4** são publicados em [Releases](https://github.com/GuihInc/GoatClient/releases); o repositório é privado e exige acesso à conta GuihInc.
+Os pacotes Linux x64, Windows x64, macOS Intel e macOS Apple Silicon da versão **1.0.5** são publicados em [Releases](https://github.com/GuihInc/GoatClient/releases); o repositório é privado e exige acesso à conta GuihInc.
 
 O launcher usa somente perfis offline, para mundos locais e servidores que aceitam esse tipo de sessão. [Instruções do launcher e publicação de novas versões](launcher/README.md).
 
 ## O que já funciona
 
-- Dez capas próprias selecionáveis, cada uma com padrão e paleta próprios: Goat Original, Ember, Frost, Aurora, Void, Ocean, Sunset, Rose, Mint e Cherry.
+- Dez capas próprias selecionáveis, com tecido sombreado e emblemas centrais limpos: Goat Original, Ember, Frost, Aurora, Void, Ocean, Sunset, Rose, Mint e Cherry. No jogo, a capa usa a física 3D nativa do Minecraft.
 - Asas cosméticas com paleta combinando com a capa escolhida, aplicadas à textura de elytra quando o jogador equipa uma.
-- Cinco pets pixel-art selecionáveis no HUD (cabrito, raposa, abelha, slime e fantasminha) e oito emotes locais rápidos.
+- Cinco pets 3D low-poly selecionáveis, presos ao ombro do jogador local (cabrito, raposa, abelha, slime e fantasminha), além de oito emotes locais rápidos.
 - Opção Original para voltar à capa da conta, se houver, e botão para desligar os cosméticos do GoatClient.
 - Menu pelo **Shift direito**, reconfigurável em Opções → Controles → Teclas → GoatClient.
 - Botão **GOAT** no menu principal e no menu de pausa.
@@ -26,13 +26,13 @@ O launcher usa somente perfis offline, para mundos locais e servidores que aceit
 - Menu de mods com FPS, coordenadas, teclas de movimento, direção, relógio e status de corrida, habilitados separadamente. As teclas exibidas acompanham seus controles personalizados.
 - Salvamento por UUID em `config/goatclient.json`, com recuperação de JSON danificado e preservação de uma cópia `.broken-*`.
 
-Os cosméticos desta versão aparecem **somente no seu dispositivo**. As asas aparecem ao equipar uma elytra; o pet e os emotes são elementos locais do HUD e não são enviados a outros jogadores. A skin, o nome e o UUID vêm da sessão ativa; você não precisa inserir senha no mod. As preferências não são sincronizadas entre máquinas. A prévia 3D mostra a skin; as capas são pré-visualizadas nos cartões do guarda-roupa.
+Os cosméticos desta versão aparecem **somente no seu dispositivo**. As asas aparecem ao equipar uma elytra; o pet 3D fica no ombro do jogador local e os emotes são notificações locais. Nada disso é enviado a outros jogadores. A skin, o nome e o UUID vêm da sessão ativa; você não precisa inserir senha no mod. As preferências não são sincronizadas entre máquinas. A prévia 3D do guarda-roupa mostra a skin; as capas são pré-visualizadas nos cartões.
 
 ## Instalar para jogar
 
 1. Instale o Minecraft Java 26.3 e o [Fabric Loader](https://fabricmc.net/use/installer/) 0.19.5 ou superior em seu launcher.
 2. Baixe o [Fabric API](https://modrinth.com/mod/fabric-api/versions?g=26.3) **0.163.0+26.3** ou superior compatível com 26.3.
-3. Coloque o Fabric API e `goatclient-0.2.3.jar` em `mods/` da instalação escolhida. Substitua o JAR antigo do GoatClient; mantenha apenas uma versão instalada. Não use o arquivo `-sources.jar` para jogar.
+3. Coloque o Fabric API e `goatclient-0.2.4.jar` em `mods/` da instalação escolhida. Substitua o JAR antigo do GoatClient; mantenha apenas uma versão instalada. Não use o arquivo `-sources.jar` para jogar.
 4. Inicie o perfil Fabric. Abra **GOAT**, equipe uma capa e entre em um mundo. Use **F5** para vê-la.
 
 A opção Capa em Opções → Personalização da skin deve estar ligada. O Minecraft oculta a capa ao usar elytra e durante a invisibilidade, conforme o comportamento nativo.
@@ -51,7 +51,7 @@ Instale um **JDK 25** e deixe `java` disponível no terminal ou configure `JAVA_
 ./gradlew build
 ```
 
-O mod é gerado em `build/libs/goatclient-0.2.3.jar`. No Windows, use `gradlew.bat build`.
+O mod é gerado em `build/libs/goatclient-0.2.4.jar`. No Windows, use `gradlew.bat build`.
 
 Para abrir uma instalação isolada de desenvolvimento:
 
@@ -67,7 +67,7 @@ Para executar os testes de persistência, identidade offline e autenticação Mi
 ./gradlew test
 ```
 
-Há também um teste gráfico opcional que abre o Minecraft, navega pelo guarda-roupa, menu de mods e contas, verifica a interface compacta, testa pet/emotes/asa, troca para offline, restaura o launcher, cria um mundo e valida a identidade offline e a aplicação das capas no jogador:
+Há também um teste gráfico opcional que abre o Minecraft, navega pelo guarda-roupa, menu de mods e contas, verifica a interface compacta, testa o pet 3D no ombro/emotes/asa, troca para offline, restaura o launcher, cria um mundo e valida a identidade offline e a aplicação das capas no jogador:
 
 ```sh
 ./gradlew runClientGameTest --args='--width 1440 --height 900'
@@ -85,6 +85,6 @@ Versões fixadas: Minecraft 26.3, Fabric Loader 0.19.5, Fabric API 0.163.0+26.3,
 
 ## Próxima etapa do produto
 
-Os cosméticos desta versão são locais. Para que outros jogadores também vejam asas, pets ou emotes, ainda seria necessário um serviço de sincronização por UUID e renderização para outros jogadores. O pet e os emotes atuais são efeitos de HUD, não entidades/ações transmitidas ao servidor. Para distribuição pública, faltam hospedar um catálogo confiável, configurar o aplicativo Microsoft e assinar os executáveis.
+Os cosméticos desta versão são locais. Para que outros jogadores também vejam asas, pets ou emotes, seria necessário um serviço de sincronização por UUID e renderização compartilhada. O pet e os emotes não são enviados ao servidor. Para distribuição pública, faltam hospedar um catálogo confiável, configurar o aplicativo Microsoft e assinar os executáveis.
 
 Produto independente; não é um produto oficial da Mojang ou Microsoft e não é afiliado ao Lunar Client ou Badlion.

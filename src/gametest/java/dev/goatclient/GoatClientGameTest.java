@@ -1,6 +1,7 @@
 package dev.goatclient;
 
 import dev.goatclient.cosmetic.CapeStyle;
+import dev.goatclient.cosmetic.PetStyle;
 import dev.goatclient.auth.AccountManager;
 import dev.goatclient.auth.ClientSession;
 import dev.goatclient.auth.OfflineAccount;
@@ -23,6 +24,9 @@ public final class GoatClientGameTest implements FabricClientGameTest {
             client.options.guiScale().set(2);
             client.resizeGui();
             GoatClient.profile().showCoordinates = false;
+            GoatClient.profile().showDirection = false;
+            GoatClient.profile().petEnabled = false;
+            GoatClient.profile().pet = PetStyle.GOAT.id();
             GoatClient.profile().cosmeticsEnabled = true;
         });
         var launcherUser = context.computeOnClient(client -> client.getUser());
@@ -56,7 +60,10 @@ public final class GoatClientGameTest implements FabricClientGameTest {
         context.runOnClient(client -> require(GoatClient.profile().showDirection,
                 "Direction module did not update the profile"));
         context.clickScreenButton("Cosméticos");
-        context.clickScreenButton("Pet cabrito no HUD: OFF");
+        context.clickScreenButton("Pet: Cabrito");
+        context.runOnClient(client -> require(GoatClient.profile().petStyle() == PetStyle.FOX,
+                "Pet selection did not update the profile"));
+        context.clickScreenButton("Pet 3D no ombro: OFF");
         context.runOnClient(client -> require(GoatClient.profile().petEnabled,
                 "Pet toggle did not update the profile"));
         context.clickScreenButton("Emotes");
@@ -80,21 +87,19 @@ public final class GoatClientGameTest implements FabricClientGameTest {
         context.clickScreenButton("GOAT");
         context.clickScreenButton("Contas");
         context.waitForScreen(AccountScreen.class);
-        context.clickScreenButton("Microsoft");
         context.runOnClient(client -> edit(client.gui.screen()).setValue(""));
-        context.clickScreenButton("Entrar com Microsoft");
-        // Validation must fail locally without replacing the launcher's session.
+        context.clickScreenButton("Usar perfil offline");
+        // Invalid offline nicknames must fail locally without replacing the current session.
         context.waitTicks(5);
         context.runOnClient(client -> require(client.getUser() == launcherUser,
-                "An unconfigured Microsoft login replaced the current session"));
-        context.clickScreenButton("Offline");
+                "An invalid offline nickname replaced the current session"));
         context.runOnClient(client -> edit(client.gui.screen()).setValue("a"));
-        context.clickScreenButton("Entrar offline");
+        context.clickScreenButton("Usar perfil offline");
         context.runOnClient(client -> require(client.getUser() == launcherUser,
                 "Invalid offline nickname replaced the current session"));
         context.runOnClient(client -> edit(client.gui.screen()).setValue("GoatOffline"));
         context.takeScreenshot("goatclient-accounts");
-        context.clickScreenButton("Entrar offline");
+        context.clickScreenButton("Usar perfil offline");
         context.waitForScreen(GoatScreen.class);
         context.runOnClient(client -> {
             require(client.getUser().getProfileId().equals(OfflineAccount.uuid("GoatOffline")), "Incorrect offline UUID");
@@ -105,15 +110,9 @@ public final class GoatClientGameTest implements FabricClientGameTest {
         });
         context.clickScreenButton("Frost");
         context.clickScreenButton("Contas");
-        context.clickScreenButton("Usar conta do launcher");
-        context.runOnClient(client -> {
-            require(client.getUser() == launcherUser, "Launcher session was not restored");
-            require(GoatClient.profile().capeStyle() == CapeStyle.EMBER, "Launcher cosmetics were overwritten by offline settings");
-        });
-        context.clickScreenButton("Contas");
-        context.clickScreenButton("Offline");
         context.runOnClient(client -> edit(client.gui.screen()).setValue("GoatOffline"));
-        context.clickScreenButton("Entrar offline");
+        context.clickScreenButton("Usar perfil offline");
+        context.waitForScreen(GoatScreen.class);
         context.runOnClient(client -> require(GoatClient.profile().capeStyle() == CapeStyle.FROST,
                 "Offline cosmetics were not restored by nickname"));
         context.clickScreenButton("Voltar");
@@ -131,6 +130,8 @@ public final class GoatClientGameTest implements FabricClientGameTest {
                     require(client.getUser().getName().equals("GoatOffline"), "Blocked switch partially replaced the session");
                 }
                 var profile = GoatClient.profile();
+                profile.petEnabled = true;
+                profile.pet = PetStyle.GOAT.id();
                 profile.cosmeticsEnabled = false;
                 var original = client.player.getSkin();
                 profile.cosmeticsEnabled = true;
